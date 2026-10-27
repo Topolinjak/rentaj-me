@@ -1,0 +1,34 @@
+# Odvisnosti
+node_modules/
+
+# Build
+dist/
+build/
+coverage/
+
+# Okoljske spremenljivke (.env.example ostane v repozitoriju)
+.env
+.env.*
+!.env.example
+
+# Logi
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vite
+*.local
+.vite/
+
+# Urejevalniki
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+
+# Operacijski sistem
+.DS_Store
+Thumbs.db
