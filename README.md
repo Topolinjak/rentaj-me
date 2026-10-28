@@ -32,7 +32,3 @@ Spletni sistem za izposojo opreme na oddelku za tehniko.
 6. [Wireframes](docs/06-wireframes.md)
 
 Arhitekturne odločitve so zapisane v [docs/adr/](docs/adr/).
-
-## Razvojni proces
-
-Razvoj poteka po strategiji **GitHub Flow**: veja `main` je zaščitena, vsaka sprememba se razvija na svoji veji in v `main` združi prek pull requesta.
