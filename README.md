@@ -30,5 +30,6 @@ Spletni sistem za izposojo opreme na oddelku za tehniko.
 4. [Arhitektura in tehnološki sklad](docs/04-arhitektura-in-tehnoloski-sklad.md)
 5. [Uporabniške zgodbe](docs/05-uporabniske-zgodbe.md)
 6. [Wireframes](docs/06-wireframes.md)
+7. [Oblikovanje](docs/07-oblikovanje.md)
 
 Arhitekturne odločitve so zapisane v [docs/adr/](docs/adr/).
