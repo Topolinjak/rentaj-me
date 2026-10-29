@@ -22,6 +22,32 @@ Spletni sistem za izposojo opreme na oddelku za tehniko.
 └── docs/       # dokumentacija projekta
 ```
 
+## Lokalni zagon
+
+Potrebuješ [Docker](https://docs.docker.com/get-docker/) z Docker Compose.
+
+1. Kopiraj predlogo nastavitev in jo po potrebi prilagodi:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Če so vrata `5432` na tvojem računalniku že zasedena, v `.env` nastavi drug `DB_PORT` (npr. `5433`) in ista vrata uporabi v `DATABASE_URL`.
+
+2. Zaženi sistem:
+
+   ```bash
+   docker compose up -d
+   ```
+
+3. Preveri, ali je baza pripravljena (stanje `healthy`):
+
+   ```bash
+   docker compose ps
+   ```
+
+Sistem ustavi z `docker compose down`. Podatki baze ostanejo v volumnu `db-podatki`; izbrišeš jih z `docker compose down -v`.
+
 ## Dokumentacija
 
 1. [Zasnova rešitve](docs/01-zasnova-resitve.md)
