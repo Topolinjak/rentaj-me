@@ -1,0 +1,146 @@
+// Podatkovni model Rentaj.me. Opis entitet je v docs/03-podatkovni-model.md.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Naštevni tipi
+
+enum Vloga {
+  STUDENT
+  ASISTENT
+  PROFESOR
+  TEHNIK
+  ADMIN
+}
+
+enum StatusOpreme {
+  NA_VOLJO
+  V_OKVARI
+  UMAKNJEN
+}
+
+enum StanjeOpreme {
+  BREZHIBNO
+  OBRABLJENO
+  POSKODOVANO
+}
+
+enum StatusRezervacije {
+  ODDANA
+  ODOBRENA
+  ZAVRNJENA
+  PREKLICANA
+  IZDANA
+  VRNJENA
+}
+
+enum RazlogZavrnitve {
+  ZAMUJENA_IZPOSOJA
+  NEPORAVNANA_POSKODBA
+  OPREMA_V_OKVARI
+  POTREBNA_ZA_VAJE
+  NEUSTREZEN_NAMEN
+}
+
+// Entitete
+
+model Uporabnik {
+  id         Int      @id @default(autoincrement())
+  ime        String
+  priimek    String
+  email      String   @unique
+  gesloHash  String
+  vloga      Vloga
+  aktiven    Boolean  @default(true)
+  ustvarjeno DateTime @default(now()) @db.Timestamptz(3)
+
+  rezervacije         Rezervacija[] @relation("RezervacijeUporabnika")
+  obdelaneRezervacije Rezervacija[] @relation("ObdelaneRezervacije")
+}
+
+model Kategorija {
+  id    Int     @id @default(autoincrement())
+  naziv String  @unique
+  opis  String?
+
+  kosi KosOpreme[]
+}
+
+model KosOpreme {
+  id                 Int          @id @default(autoincrement())
+  inventarnaStevilka String       @unique
+  naziv              String
+  opis               String?
+  kategorijaId       Int
+  status             StatusOpreme @default(NA_VOLJO)
+  trenutnoStanje     StanjeOpreme @default(BREZHIBNO)
+
+  kategorija Kategorija            @relation(fields: [kategorijaId], references: [id])
+  postavke   PostavkaRezervacije[]
+
+  @@index([kategorijaId])
+}
+
+model Rezervacija {
+  id              Int               @id @default(autoincrement())
+  uporabnikId     Int
+  zacetek         DateTime          @db.Timestamptz(3)
+  konec           DateTime          @db.Timestamptz(3)
+  namen           String
+  dolgorocna      Boolean           @default(false)
+  status          StatusRezervacije @default(ODDANA)
+  razlogZavrnitve RazlogZavrnitve?
+  komentarTehnika String?
+  obdelalId       Int?
+  ustvarjeno      DateTime          @default(now()) @db.Timestamptz(3)
+  izdanoOb        DateTime?         @db.Timestamptz(3)
+  vrnjenoOb       DateTime?         @db.Timestamptz(3)
+
+  uporabnik Uporabnik             @relation("RezervacijeUporabnika", fields: [uporabnikId], references: [id])
+  obdelal   Uporabnik?            @relation("ObdelaneRezervacije", fields: [obdelalId], references: [id], onDelete: Restrict)
+  postavke  PostavkaRezervacije[]
+
+  @@index([uporabnikId])
+  @@index([obdelalId])
+  @@index([status])
+}
+
+model PostavkaRezervacije {
+  id              Int           @id @default(autoincrement())
+  rezervacijaId   Int
+  kosOpremeId     Int
+  stanjeObIzdaji  StanjeOpreme?
+  stanjeObVracilu StanjeOpreme?
+
+  rezervacija Rezervacija    @relation(fields: [rezervacijaId], references: [id])
+  kosOpreme   KosOpreme      @relation(fields: [kosOpremeId], references: [id])
+  poskodba    ZapisPoskodbe?
+
+  @@unique([rezervacijaId, kosOpremeId])
+  @@index([kosOpremeId])
+}
+
+model ZapisPoskodbe {
+  id          Int       @id @default(autoincrement())
+  postavkaId  Int       @unique
+  opis        String
+  razresen    Boolean   @default(false)
+  ustvarjeno  DateTime  @default(now()) @db.Timestamptz(3)
+  razresenoOb DateTime? @db.Timestamptz(3)
+
+  postavka PostavkaRezervacije @relation(fields: [postavkaId], references: [id])
+}
+
+model PraviloIzposoje {
+  id               Int   @id @default(autoincrement())
+  vloga            Vloga @unique
+  maxKosov         Int
+  maxDni           Int
+  maxDniDolgorocno Int?
+}
