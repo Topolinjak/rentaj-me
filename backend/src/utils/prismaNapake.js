@@ -5,3 +5,6 @@ export const jeKrsitevUnikatnosti = (napaka) => napaka?.code === 'P2002';
 
 // Zapis za update/delete ne obstaja.
 export const jeNeobstojecZapis = (napaka) => napaka?.code === 'P2025';
+
+// Tuji ključ kaže na neobstoječ zapis (npr. kategorijaId).
+export const jeNeveljavenTujiKljuc = (napaka) => napaka?.code === 'P2003';
