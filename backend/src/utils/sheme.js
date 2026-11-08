@@ -1,5 +1,6 @@
 // Zod sheme, ki se ponavljajo v več rutah.
 import { z } from 'zod';
+import { jeVeljavenDatum } from './datumi.js';
 
 // E-poštni naslov: obreže presledke in pretvori v male črke, da je iskanje enolično.
 export const emailShema = z
@@ -22,3 +23,8 @@ export const neobveznoBesedilo = z
   .trim()
   .nullish()
   .transform((v) => v || null);
+
+// Datum v obliki YYYY-MM-DD (ADR-0013).
+export const datumShema = z
+  .string('Vnesite datum.')
+  .refine(jeVeljavenDatum, 'Datum mora biti v obliki LLLL-MM-DD.');

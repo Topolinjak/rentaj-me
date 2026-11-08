@@ -133,4 +133,5 @@ rentaj-me/
 | **Brez javne registracije** | Sistem je namenjen le članom oddelka, zato račune ustvarja administrator. To prepreči dostop zunanjih oseb brez integracije s fakultetnim sistemom (ta je izven obsega). |
 | **Pravila izposoje v bazi** | Administrator lahko omejitve spreminja brez sprememb v kodi. |
 | **Docker Compose za lokalni zagon** | Vsi razvijalci imajo enako okolje, celoten sistem z bazo vred pa se zažene z enim ukazom. |
+| **Termini kot celi dnevi, polodprt interval** | Uporabnik izbira cele dneve, `zacetek` in `konec` sta polnoči v Ljubljani, `konec` je izključen. Formula za prekrivanje deluje brez posebnih primerov, zaporedne rezervacije se ne prekrivajo, trajanje se šteje v koledarskih dneh (ADR-0013). |
 | **Proxy v Vite** | Frontend in backend sta za brskalnik na istem naslovu, kar poenostavi delo s piškotki in odpravi težave s CORS. |
