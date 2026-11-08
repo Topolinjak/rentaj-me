@@ -19,5 +19,33 @@ services:
       timeout: 5s
       retries: 10
 
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # V Compose je baza dosegljiva pod imenom storitve "db" na notranjih vratih 5432.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-rentaj}:${POSTGRES_PASSWORD:-rentaj}@db:5432/${POSTGRES_DB:-rentaj}
+      JWT_SECRET: ${JWT_SECRET:-spremeni-me}
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+      TZ: Europe/Ljubljana
+      # Prisma je zaklenjena na 7.x; obvestilo bi predlagalo nameščanje 8.0 RC.
+      PRISMA_HIDE_UPDATE_MESSAGE: "true"
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    volumes:
+      # Koda z gostitelja, da --watch zazna spremembe ...
+      - ./backend:/app
+      # ... a node_modules ostane iz slike (zgrajen za Linux/Alpine, ne za gostitelja).
+      - /app/node_modules
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/zdravje || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   db-podatki:

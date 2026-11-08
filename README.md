@@ -32,7 +32,7 @@ Potrebuješ [Docker](https://docs.docker.com/get-docker/) z Docker Compose.
    cp .env.example .env
    ```
 
-   Če so vrata `5432` na tvojem računalniku že zasedena, v `.env` nastavi drug `DB_PORT` (npr. `5433`) in ista vrata uporabi v `DATABASE_URL`.
+   Če so vrata `5432` na tvojem računalniku že zasedena, v `.env` nastavi drug `DB_PORT` (npr. `5433`) in ista vrata uporabi v `DATABASE_URL`. Če so zasedena vrata `3000`, nastavi `BACKEND_PORT` (npr. `3001`).
 
 2. Zaženi sistem:
 
@@ -40,11 +40,23 @@ Potrebuješ [Docker](https://docs.docker.com/get-docker/) z Docker Compose.
    docker compose up -d
    ```
 
-3. Preveri, ali je baza pripravljena (stanje `healthy`):
+   Ob zagonu backend uveljavi migracije (`prisma migrate deploy`) in generira Prisma odjemalca. Spremembe kode v `backend/` ga samodejno ponovno zaženejo.
+
+3. Preveri, ali sta baza in backend pripravljena (stanje `healthy`):
 
    ```bash
    docker compose ps
+   curl http://localhost:3000/api/zdravje
    ```
+
+Backend lahko poženeš tudi brez Dockerja (baza naj teče v Compose):
+
+```bash
+cd backend
+npm install
+npm run db:generate
+npm run dev
+```
 
 Sistem ustavi z `docker compose down`. Podatki baze ostanejo v volumnu `db-podatki`; izbrišeš jih z `docker compose down -v`.
 
