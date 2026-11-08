@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "format": "prettier --write . --ignore-path ../.prettierignore",
+    "format:check": "prettier --check . --ignore-path ../.prettierignore",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -27,7 +31,14 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "prisma": "7.10.1"
+    "@eslint/js": "10.0.1",
+    "eslint": "10.14.0",
+    "eslint-config-prettier": "10.1.8",
+    "globals": "17.14.0",
+    "prettier": "3.9.10",
+    "prisma": "7.10.1",
+    "supertest": "7.3.2",
+    "vitest": "5.1.0"
   },
   "private": true
 }

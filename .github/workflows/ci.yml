@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend – lint in testi
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    services:
+      db:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: rentaj
+          POSTGRES_PASSWORD: rentaj
+          POSTGRES_DB: rentaj
+          TZ: Europe/Ljubljana
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U rentaj -d rentaj"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://rentaj:rentaj@localhost:5432/rentaj
+      TEST_DATABASE_URL: postgresql://rentaj:rentaj@localhost:5432/rentaj_test
+      JWT_SECRET: ci-testna-skrivnost
+      PRISMA_HIDE_UPDATE_MESSAGE: 'true'
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run lint
+      - run: npm run format:check
+      # globalSetup ustvari testno bazo in uveljavi migracije (prisma migrate deploy).
+      - run: npm test

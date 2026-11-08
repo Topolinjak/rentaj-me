@@ -13,12 +13,14 @@ Spletni sistem za izposojo opreme na oddelku za tehniko.
 | **Podatkovna baza** | PostgreSQL, Prisma ORM |
 | **Avtentikacija** | JWT v piškotku httpOnly, bcrypt |
 | **Lokalni razvoj** | Docker, Docker Compose |
+| **Testi in CI** | Vitest, Supertest, ESLint, Prettier, GitHub Actions |
 
 ## Struktura repozitorija
 
 ```
 ├── frontend/   # React aplikacija
 ├── backend/    # Express REST API
+├── .github/    # CI (GitHub Actions)
 └── docs/       # dokumentacija projekta
 ```
 
@@ -80,6 +82,20 @@ npm run db:generate
 npm run db:seed
 npm run dev
 ```
+
+## Testi in kakovost kode
+
+Testi tečejo na ločeni bazi `rentaj_test` na istem strežniku PostgreSQL (baza naj teče v Compose). Testi jo ustvarijo sami, uveljavijo migracije in jo pred vsakim testom izpraznijo; razvojne baze se ne dotaknejo.
+
+```bash
+cd backend
+npm test              # vsi testi enkrat
+npm run test:watch    # ponovni zagon ob spremembah
+npm run lint          # ESLint
+npm run format        # Prettier popravi oblikovanje
+```
+
+Ob vsakem pull requestu na `main` GitHub Actions poženejo lint, preverjanje oblikovanja in teste.
 
 ## Dokumentacija
 
