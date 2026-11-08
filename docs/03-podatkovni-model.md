@@ -258,6 +258,7 @@ Uporabnik izbira cele dneve, rezervacija pa hrani `zacetek` in `konec` kot trenu
 ## Ključna pravila nad podatki
 
 - **Prekrivanje terminov:** kos opreme ne sme biti v dveh rezervacijah s statusom `ODDANA`, `ODOBRENA` ali `IZDANA`, katerih termina se prekrivata. Termina se prekrivata, če velja `novZacetek < obstojeciKonec` in `novKonec > obstojeciZacetek`.
+- **Pogoji ob oddaji:** vsi izbrani kosi morajo imeti status `NA_VOLJO`, zadnji dan ne sme biti pred prvim, prvi dan pa ne pred današnjim dnem v Ljubljani (glej *Termini*).
 - **Omejitev kosov:** seštevek kosov v vseh aktivnih rezervacijah uporabnika (`ODDANA`, `ODOBRENA`, `IZDANA`) skupaj z novo rezervacijo ne sme preseči `maxKosov` za njegovo vlogo.
 - **Omejitev časa:** trajanje v koledarskih dneh (glej *Termini*) ne sme preseči `maxDni` oziroma `maxDniDolgorocno`, če je `dolgorocna = true`. Dolgoročno rezervacijo lahko odda le profesor.
 - **Zavrnitev:** če ima rezervacija status `ZAVRNJENA`, mora biti `razlogZavrnitve` izpolnjen.

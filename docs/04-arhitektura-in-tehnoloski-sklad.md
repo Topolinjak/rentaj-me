@@ -54,7 +54,7 @@ flowchart LR
 | `PATCH /api/oprema/:id` | Urejanje kosa in sprememba statusa; odgovor vsebuje število odprtih rezervacij | tehnik, admin |
 | `GET /api/kategorije` | Seznam kategorij | prijavljeni |
 | `POST /api/kategorije`, `PATCH /api/kategorije/:id` | Nova kategorija, urejanje kategorije | admin |
-| `POST /api/rezervacije` | Oddaja rezervacije s preverjanjem pravil | študent, asistent, profesor |
+| `POST /api/rezervacije` | Oddaja rezervacije `{ kosi, od, do, namen, dolgorocna }` s preverjanjem razpoložljivosti, prekrivanja in pravil | študent, asistent, profesor |
 | `GET /api/rezervacije/moje` | Lastne rezervacije | študent, asistent, profesor |
 | `PATCH /api/rezervacije/:id/preklic` | Preklic oddane rezervacije | lastnik rezervacije |
 | `GET /api/rezervacije` | Vse rezervacije s filtri (npr. oddane, zamujene) | tehnik, admin |

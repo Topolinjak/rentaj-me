@@ -331,6 +331,5 @@ Oznake funkcionalnosti (F1–F13) se ujemajo s številčenjem v dokumentu 02. Zg
 
 Nekateri kriteriji sprejemljivosti dopolnjujejo podrobnosti, ki v dokumentih 03 in 04 še niso izrecno zapisane. Ob implementaciji jih je treba dodati tudi tja:
 
-- Ob oddaji se preveri, da so vsi kosi v statusu `NA_VOLJO` (US-03), da je `zacetek < konec` in da začetek ni v preteklosti (US-03).
 - Ob vračilu se `trenutnoStanje` kosa posodobi na `stanjeObVracilu` (US-08).
 - Endpointi za razreševanje poškodb in zgodovino kosa (US-15, US-16) še niso navedeni v seznamu API endpointov v dokumentu 04.
