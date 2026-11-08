@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { authRouter } from './auth.js';
 import { kategorijeRouter } from './kategorije.js';
 import { opremaRouter } from './oprema.js';
+import { rezervacijeRouter } from './rezervacije.js';
 import { uporabnikiRouter } from './uporabniki.js';
 
 export const router = Router();
@@ -16,3 +17,4 @@ router.use('/auth', authRouter);
 router.use('/uporabniki', uporabnikiRouter);
 router.use('/kategorije', kategorijeRouter);
 router.use('/oprema', opremaRouter);
+router.use('/rezervacije', rezervacijeRouter);
