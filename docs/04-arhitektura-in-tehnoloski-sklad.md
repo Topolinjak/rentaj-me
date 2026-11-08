@@ -47,8 +47,9 @@ flowchart LR
 | `POST /api/auth/prijava` | Prijava, nastavi piškotek z JWT | vsi |
 | `POST /api/auth/odjava` | Odjava, izbriše piškotek | prijavljeni |
 | `GET /api/auth/jaz` | Podatki o prijavljenem uporabniku in vlogi | prijavljeni |
-| `GET /api/oprema` | Katalog opreme z iskanjem in filtri | prijavljeni |
-| `GET /api/oprema/:id/zasedenost` | Zasedeni termini kosa opreme | prijavljeni |
+| `GET /api/oprema` | Katalog opreme (brez umaknjenih kosov); iskanje in filtri v P-14 | prijavljeni |
+| `GET /api/oprema/:id` | Podrobnosti kosa (`404` za umaknjen kos) | prijavljeni |
+| `GET /api/oprema/:id/zasedenost?od=&do=` | Zasedena obdobja kosa `[{ od, do }]` v obdobju od–do, brez podatkov o uporabniku | prijavljeni |
 | `POST /api/oprema` | Nov kos opreme (status `NA_VOLJO`) | tehnik, admin |
 | `PATCH /api/oprema/:id` | Urejanje kosa in sprememba statusa; odgovor vsebuje število odprtih rezervacij | tehnik, admin |
 | `GET /api/kategorije` | Seznam kategorij | prijavljeni |
