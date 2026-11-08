@@ -32,3 +32,6 @@ pnpm-debug.log*
 # Operacijski sistem
 .DS_Store
 Thumbs.db
+
+# Generiran Prisma odjemalec
+backend/src/generated/
