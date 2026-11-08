@@ -49,16 +49,37 @@ Potrebuješ [Docker](https://docs.docker.com/get-docker/) z Docker Compose.
    curl http://localhost:3000/api/zdravje
    ```
 
+4. Naloži začetne podatke (testni uporabniki, pravila izposoje, kategorije in oprema). Skripta je idempotentna, zato jo lahko poženeš večkrat:
+
+   ```bash
+   docker compose exec backend npm run db:seed
+   ```
+
+Sistem ustavi z `docker compose down`. Podatki baze ostanejo v volumnu `db-podatki`; izbrišeš jih z `docker compose down -v`.
+
+### Testni računi
+
+> **Samo za razvoj.** Te račune ustvari seed skripta; v produkciji se ne uporabljajo.
+
+| Vloga | E-pošta | Geslo |
+|---|---|---|
+| Administrator | `admin@rentaj.test` | `admin123` |
+| Tehnik | `tehnik@rentaj.test` | `tehnik123` |
+| Študent | `student@rentaj.test` | `student123` |
+| Asistent | `asistent@rentaj.test` | `asistent123` |
+| Profesor | `profesor@rentaj.test` | `profesor123` |
+
+### Backend brez Dockerja
+
 Backend lahko poženeš tudi brez Dockerja (baza naj teče v Compose):
 
 ```bash
 cd backend
 npm install
 npm run db:generate
+npm run db:seed
 npm run dev
 ```
-
-Sistem ustavi z `docker compose down`. Podatki baze ostanejo v volumnu `db-podatki`; izbrišeš jih z `docker compose down -v`.
 
 ## Dokumentacija
 
