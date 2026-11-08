@@ -32,7 +32,7 @@ Potrebuješ [Docker](https://docs.docker.com/get-docker/) z Docker Compose.
    cp .env.example .env
    ```
 
-   Če so vrata `5432` na tvojem računalniku že zasedena, v `.env` nastavi drug `DB_PORT` (npr. `5433`) in ista vrata uporabi v `DATABASE_URL`.
+   Če so vrata `5432` na tvojem računalniku že zasedena, v `.env` nastavi drug `DB_PORT` (npr. `5433`) in ista vrata uporabi v `DATABASE_URL`. Če so zasedena vrata `3000`, nastavi `BACKEND_PORT` (npr. `3001`).
 
 2. Zaženi sistem:
 
@@ -40,13 +40,46 @@ Potrebuješ [Docker](https://docs.docker.com/get-docker/) z Docker Compose.
    docker compose up -d
    ```
 
-3. Preveri, ali je baza pripravljena (stanje `healthy`):
+   Ob zagonu backend uveljavi migracije (`prisma migrate deploy`) in generira Prisma odjemalca. Spremembe kode v `backend/` ga samodejno ponovno zaženejo.
+
+3. Preveri, ali sta baza in backend pripravljena (stanje `healthy`):
 
    ```bash
    docker compose ps
+   curl http://localhost:3000/api/zdravje
+   ```
+
+4. Naloži začetne podatke (testni uporabniki, pravila izposoje, kategorije in oprema). Skripta je idempotentna, zato jo lahko poženeš večkrat:
+
+   ```bash
+   docker compose exec backend npm run db:seed
    ```
 
 Sistem ustavi z `docker compose down`. Podatki baze ostanejo v volumnu `db-podatki`; izbrišeš jih z `docker compose down -v`.
+
+### Testni računi
+
+> **Samo za razvoj.** Te račune ustvari seed skripta; v produkciji se ne uporabljajo.
+
+| Vloga | E-pošta | Geslo |
+|---|---|---|
+| Administrator | `admin@rentaj.test` | `admin123` |
+| Tehnik | `tehnik@rentaj.test` | `tehnik123` |
+| Študent | `student@rentaj.test` | `student123` |
+| Asistent | `asistent@rentaj.test` | `asistent123` |
+| Profesor | `profesor@rentaj.test` | `profesor123` |
+
+### Backend brez Dockerja
+
+Backend lahko poženeš tudi brez Dockerja (baza naj teče v Compose):
+
+```bash
+cd backend
+npm install
+npm run db:generate
+npm run db:seed
+npm run dev
+```
 
 ## Dokumentacija
 
