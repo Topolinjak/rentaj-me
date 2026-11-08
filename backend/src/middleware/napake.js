@@ -6,7 +6,6 @@ export function neznanaPot(req, res, next) {
 }
 
 // Centralni error handler. Express ga prepozna po ŠTIRIH parametrih, zato next ostane.
-// eslint-disable-next-line no-unused-vars
 export function obdelajNapako(err, req, res, next) {
   if (err instanceof ApiError) {
     return res.status(err.status).json({ sporocilo: err.message });

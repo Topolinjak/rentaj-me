@@ -109,6 +109,7 @@ rentaj-me/
 | **Podatkovna baza** | PostgreSQL, Prisma ORM |
 | **Avtentikacija** | JWT (jsonwebtoken), bcrypt, piškotki httpOnly |
 | **Lokalni razvoj** | Docker, Docker Compose, datoteke `.env`, Git in GitHub |
+| **Testi in kakovost kode** | Vitest, Supertest, ESLint, Prettier, GitHub Actions (CI) |
 
 ## Arhitekturne odločitve
 

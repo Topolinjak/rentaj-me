@@ -14,11 +14,41 @@ const BCRYPT_CENA = 10;
 
 // Testni računi – SAMO ZA RAZVOJ. Gesla so zapisana tudi v README.md.
 const uporabniki = [
-  { ime: 'Ana', priimek: 'Administratorka', email: 'admin@rentaj.test', geslo: 'admin123', vloga: 'ADMIN' },
-  { ime: 'Tomaž', priimek: 'Tehnik', email: 'tehnik@rentaj.test', geslo: 'tehnik123', vloga: 'TEHNIK' },
-  { ime: 'Špela', priimek: 'Študentka', email: 'student@rentaj.test', geslo: 'student123', vloga: 'STUDENT' },
-  { ime: 'Andrej', priimek: 'Asistent', email: 'asistent@rentaj.test', geslo: 'asistent123', vloga: 'ASISTENT' },
-  { ime: 'Petra', priimek: 'Profesorica', email: 'profesor@rentaj.test', geslo: 'profesor123', vloga: 'PROFESOR' },
+  {
+    ime: 'Ana',
+    priimek: 'Administratorka',
+    email: 'admin@rentaj.test',
+    geslo: 'admin123',
+    vloga: 'ADMIN',
+  },
+  {
+    ime: 'Tomaž',
+    priimek: 'Tehnik',
+    email: 'tehnik@rentaj.test',
+    geslo: 'tehnik123',
+    vloga: 'TEHNIK',
+  },
+  {
+    ime: 'Špela',
+    priimek: 'Študentka',
+    email: 'student@rentaj.test',
+    geslo: 'student123',
+    vloga: 'STUDENT',
+  },
+  {
+    ime: 'Andrej',
+    priimek: 'Asistent',
+    email: 'asistent@rentaj.test',
+    geslo: 'asistent123',
+    vloga: 'ASISTENT',
+  },
+  {
+    ime: 'Petra',
+    priimek: 'Profesorica',
+    email: 'profesor@rentaj.test',
+    geslo: 'profesor123',
+    vloga: 'PROFESOR',
+  },
 ];
 
 // Začetne vrednosti iz docs/03-podatkovni-model.md. TEHNIK in ADMIN si opreme ne izposojata.
@@ -38,18 +68,74 @@ const kategorije = [
 // status in trenutnoStanje imata v shemi privzeti vrednosti (NA_VOLJO, BREZHIBNO),
 // zato sta navedena le tam, kjer se razlikujeta.
 const oprema = [
-  { inventarnaStevilka: 'INV-0001', naziv: 'Arduino Uno R3', kategorija: 'Mikrokrmilniki', opis: 'S kablom USB-B' },
-  { inventarnaStevilka: 'INV-0002', naziv: 'Arduino Uno R3', kategorija: 'Mikrokrmilniki', opis: 'S kablom USB-B' },
-  { inventarnaStevilka: 'INV-0003', naziv: 'Raspberry Pi 5 (8 GB)', kategorija: 'Mikrokrmilniki', opis: 'Z napajalnikom in kartico microSD' },
-  { inventarnaStevilka: 'INV-0004', naziv: 'ESP32 DevKitC', kategorija: 'Mikrokrmilniki', trenutnoStanje: 'OBRABLJENO' },
-  { inventarnaStevilka: 'INV-0005', naziv: 'Digitalni multimeter Fluke 117', kategorija: 'Merilni instrumenti' },
-  { inventarnaStevilka: 'INV-0006', naziv: 'Osciloskop Rigol DS1054Z', kategorija: 'Merilni instrumenti', opis: 'S štirimi sondami' },
-  { inventarnaStevilka: 'INV-0007', naziv: 'Laboratorijski napajalnik 30 V / 5 A', kategorija: 'Merilni instrumenti', status: 'V_OKVARI', trenutnoStanje: 'POSKODOVANO', opis: 'Ne drži nastavljene napetosti' },
-  { inventarnaStevilka: 'INV-0008', naziv: 'Fotoaparat Sony A7 III', kategorija: 'Foto/video oprema', opis: 'Z objektivom 28–70 mm' },
+  {
+    inventarnaStevilka: 'INV-0001',
+    naziv: 'Arduino Uno R3',
+    kategorija: 'Mikrokrmilniki',
+    opis: 'S kablom USB-B',
+  },
+  {
+    inventarnaStevilka: 'INV-0002',
+    naziv: 'Arduino Uno R3',
+    kategorija: 'Mikrokrmilniki',
+    opis: 'S kablom USB-B',
+  },
+  {
+    inventarnaStevilka: 'INV-0003',
+    naziv: 'Raspberry Pi 5 (8 GB)',
+    kategorija: 'Mikrokrmilniki',
+    opis: 'Z napajalnikom in kartico microSD',
+  },
+  {
+    inventarnaStevilka: 'INV-0004',
+    naziv: 'ESP32 DevKitC',
+    kategorija: 'Mikrokrmilniki',
+    trenutnoStanje: 'OBRABLJENO',
+  },
+  {
+    inventarnaStevilka: 'INV-0005',
+    naziv: 'Digitalni multimeter Fluke 117',
+    kategorija: 'Merilni instrumenti',
+  },
+  {
+    inventarnaStevilka: 'INV-0006',
+    naziv: 'Osciloskop Rigol DS1054Z',
+    kategorija: 'Merilni instrumenti',
+    opis: 'S štirimi sondami',
+  },
+  {
+    inventarnaStevilka: 'INV-0007',
+    naziv: 'Laboratorijski napajalnik 30 V / 5 A',
+    kategorija: 'Merilni instrumenti',
+    status: 'V_OKVARI',
+    trenutnoStanje: 'POSKODOVANO',
+    opis: 'Ne drži nastavljene napetosti',
+  },
+  {
+    inventarnaStevilka: 'INV-0008',
+    naziv: 'Fotoaparat Sony A7 III',
+    kategorija: 'Foto/video oprema',
+    opis: 'Z objektivom 28–70 mm',
+  },
   { inventarnaStevilka: 'INV-0009', naziv: 'Stativ Manfrotto', kategorija: 'Foto/video oprema' },
-  { inventarnaStevilka: 'INV-0010', naziv: 'Kamera GoPro HERO9', kategorija: 'Foto/video oprema', status: 'UMAKNJEN', opis: 'Odpisana' },
-  { inventarnaStevilka: 'INV-0011', naziv: 'Prenosnik Lenovo ThinkPad T14', kategorija: 'Računalniška oprema', opis: 'S polnilnikom' },
-  { inventarnaStevilka: 'INV-0012', naziv: 'Tablica iPad (10. gen.)', kategorija: 'Računalniška oprema' },
+  {
+    inventarnaStevilka: 'INV-0010',
+    naziv: 'Kamera GoPro HERO9',
+    kategorija: 'Foto/video oprema',
+    status: 'UMAKNJEN',
+    opis: 'Odpisana',
+  },
+  {
+    inventarnaStevilka: 'INV-0011',
+    naziv: 'Prenosnik Lenovo ThinkPad T14',
+    kategorija: 'Računalniška oprema',
+    opis: 'S polnilnikom',
+  },
+  {
+    inventarnaStevilka: 'INV-0012',
+    naziv: 'Tablica iPad (10. gen.)',
+    kategorija: 'Računalniška oprema',
+  },
 ];
 
 try {
