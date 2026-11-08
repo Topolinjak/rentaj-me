@@ -333,4 +333,4 @@ Nekateri kriteriji sprejemljivosti dopolnjujejo podrobnosti, ki v dokumentih 03 
 
 - Ob oddaji se preveri, da so vsi kosi v statusu `NA_VOLJO` (US-03), da je `zacetek < konec` in da začetek ni v preteklosti (US-03).
 - Ob vračilu se `trenutnoStanje` kosa posodobi na `stanjeObVracilu` (US-08).
-- Endpointi za upravljanje opreme, razreševanje poškodb in zgodovino kosa (US-15, US-16, US-19) še niso navedeni v seznamu API endpointov v dokumentu 04.
+- Endpointi za razreševanje poškodb in zgodovino kosa (US-15, US-16) še niso navedeni v seznamu API endpointov v dokumentu 04.

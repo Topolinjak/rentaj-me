@@ -15,3 +15,10 @@ export const besedilo = (sporocilo) => z.string(sporocilo).trim().min(1, sporoci
 export const idShema = z.object({
   id: z.coerce.number('Neveljaven id.').int('Neveljaven id.').positive('Neveljaven id.'),
 });
+
+// Neobvezno besedilo: prazen niz ali null pomeni »brez vrednosti« (shrani se null).
+export const neobveznoBesedilo = z
+  .string()
+  .trim()
+  .nullish()
+  .transform((v) => v || null);

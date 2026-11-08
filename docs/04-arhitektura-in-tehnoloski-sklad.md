@@ -49,6 +49,10 @@ flowchart LR
 | `GET /api/auth/jaz` | Podatki o prijavljenem uporabniku in vlogi | prijavljeni |
 | `GET /api/oprema` | Katalog opreme z iskanjem in filtri | prijavljeni |
 | `GET /api/oprema/:id/zasedenost` | Zasedeni termini kosa opreme | prijavljeni |
+| `POST /api/oprema` | Nov kos opreme (status `NA_VOLJO`) | tehnik, admin |
+| `PATCH /api/oprema/:id` | Urejanje kosa in sprememba statusa; odgovor vsebuje število odprtih rezervacij | tehnik, admin |
+| `GET /api/kategorije` | Seznam kategorij | prijavljeni |
+| `POST /api/kategorije`, `PATCH /api/kategorije/:id` | Nova kategorija, urejanje kategorije | admin |
 | `POST /api/rezervacije` | Oddaja rezervacije s preverjanjem pravil | študent, asistent, profesor |
 | `GET /api/rezervacije/moje` | Lastne rezervacije | študent, asistent, profesor |
 | `PATCH /api/rezervacije/:id/preklic` | Preklic oddane rezervacije | lastnik rezervacije |
@@ -60,7 +64,7 @@ flowchart LR
 | `GET /api/uporabniki?iskanje=` | Seznam uporabnikov z iskanjem po imenu, priimku in e-pošti | admin |
 | `POST /api/uporabniki` | Nov uporabnik z vlogo in začetnim geslom | admin |
 | `PATCH /api/uporabniki/:id` | Urejanje, ponastavitev gesla in (de)aktivacija (brez brisanja) | admin |
-| `/api/kategorije`, `/api/pravila` | Upravljanje kategorij in pravil | admin |
+| `/api/pravila` | Upravljanje pravil izposoje | admin |
 
 ### Podatkovna baza
 

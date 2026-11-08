@@ -44,3 +44,19 @@ export async function ustvariKos(podatki = {}) {
     },
   });
 }
+
+// Ustvari rezervacijo za dane kose. Privzeto termin od jutri, 3 dni, status ODDANA.
+export async function ustvariRezervacijo({ uporabnikId, kosi, ...podatki }) {
+  const jutri = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  return prisma.rezervacija.create({
+    data: {
+      uporabnikId,
+      zacetek: jutri,
+      konec: new Date(jutri.getTime() + 3 * 24 * 60 * 60 * 1000),
+      namen: 'Testna rezervacija',
+      ...podatki,
+      postavke: { create: kosi.map((kos) => ({ kosOpremeId: kos.id ?? kos })) },
+    },
+    include: { postavke: true },
+  });
+}
