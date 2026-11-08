@@ -53,8 +53,8 @@ Zahtevek uporabnika za izposojo ene ali več kosov opreme v določenem terminu.
 |---|---|---|
 | `id` | int, PK | Enolični identifikator |
 | `uporabnikId` | int, FK → Uporabnik | Kdo si opremo izposoja |
-| `zacetek` | datetime | Začetek izposoje |
-| `konec` | datetime | Rok vračila |
+| `zacetek` | datetime | Začetek izposoje: 00:00 prvega dne po času v Ljubljani (glej *Termini*) |
+| `konec` | datetime | Konec izposoje: 00:00 dneva po zadnjem dnevu (glej *Termini*) |
 | `namen` | string | Namen izposoje (npr. »projekt pri predmetu Vgrajeni sistemi«) |
 | `dolgorocna` | boolean | Ali gre za dolgoročno izposojo (samo profesor) |
 | `status` | enum `StatusRezervacije` | Glej spodaj |
@@ -244,10 +244,21 @@ Ker že rezervacije s statusom `ODDANA` zasedejo termin, pri kasnejši odobritvi
 
 **Zamujena izposoja** ni ločen shranjen status, ampak se izračuna ob vsakem branju: rezervacija je zamujena, če ima status `IZDANA` in je `konec` manjši od trenutnega časa. Tako status vedno drži, ne da bi v ozadju tekel ločen proces. V uporabniškem vmesniku se takšna rezervacija prikaže kot *Zamujena*.
 
+## Termini
+
+Uporabnik izbira cele dneve, rezervacija pa hrani `zacetek` in `konec` kot trenutek v času. Dogovor je zapisan v [ADR-0013](adr/0013-termini-kot-celi-dnevi.md):
+
+- Termin je polodprt interval `[zacetek, konec)`. `zacetek` je 00:00 prvega dne, `konec` je 00:00 dneva **po** zadnjem dnevu, oboje po času v Ljubljani (Europe/Ljubljana), shranjeno v UTC.
+- Rezervacija od 20. 10. do 24. 10. ima `zacetek = 20. 10. 00:00` in `konec = 25. 10. 00:00`. Rezervacija od 25. 10. naprej se z njo ne prekriva.
+- Trajanje je število koledarskih dni, vključno s prvim in zadnjim (od 20. 10. do 24. 10. je 5 dni).
+- Začetek je v preteklosti, če je prvi dan pred današnjim dnem v Ljubljani.
+- Uporabniku se kot rok vračila prikaže zadnji dan (`konec − 1 dan`), zamuda pa nastopi ob `konec`.
+- API sprejema in vrača datume v obliki `YYYY-MM-DD` (`od`, `do`, kjer je `do` zadnji dan).
+
 ## Ključna pravila nad podatki
 
 - **Prekrivanje terminov:** kos opreme ne sme biti v dveh rezervacijah s statusom `ODDANA`, `ODOBRENA` ali `IZDANA`, katerih termina se prekrivata. Termina se prekrivata, če velja `novZacetek < obstojeciKonec` in `novKonec > obstojeciZacetek`.
 - **Omejitev kosov:** seštevek kosov v vseh aktivnih rezervacijah uporabnika (`ODDANA`, `ODOBRENA`, `IZDANA`) skupaj z novo rezervacijo ne sme preseči `maxKosov` za njegovo vlogo.
-- **Omejitev časa:** razlika med `konec` in `zacetek` ne sme preseči `maxDni` oziroma `maxDniDolgorocno`, če je `dolgorocna = true`. Dolgoročno rezervacijo lahko odda le profesor.
+- **Omejitev časa:** trajanje v koledarskih dneh (glej *Termini*) ne sme preseči `maxDni` oziroma `maxDniDolgorocno`, če je `dolgorocna = true`. Dolgoročno rezervacijo lahko odda le profesor.
 - **Zavrnitev:** če ima rezervacija status `ZAVRNJENA`, mora biti `razlogZavrnitve` izpolnjen.
 - **Trajna evidenca:** rezervacij, postavk in zapisov o poškodbah se ne briše. Kos opreme se ob odpisu označi kot `UMAKNJEN`, uporabnik pa kot neaktiven.
