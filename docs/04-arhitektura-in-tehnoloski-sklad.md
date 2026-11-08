@@ -57,7 +57,10 @@ flowchart LR
 | `PATCH /api/rezervacije/:id/zavrnitev` | Zavrnitev z razlogom | tehnik |
 | `PATCH /api/rezervacije/:id/izdaja` | Izdaja opreme in stanje ob izdaji | tehnik |
 | `PATCH /api/rezervacije/:id/vracilo` | Vračilo, stanje in morebitna poškodba | tehnik |
-| `/api/uporabniki`, `/api/kategorije`, `/api/pravila` | Upravljanje uporabnikov, kategorij in pravil | admin |
+| `GET /api/uporabniki?iskanje=` | Seznam uporabnikov z iskanjem po imenu, priimku in e-pošti | admin |
+| `POST /api/uporabniki` | Nov uporabnik z vlogo in začetnim geslom | admin |
+| `PATCH /api/uporabniki/:id` | Urejanje, ponastavitev gesla in (de)aktivacija (brez brisanja) | admin |
+| `/api/kategorije`, `/api/pravila` | Upravljanje kategorij in pravil | admin |
 
 ### Podatkovna baza
 

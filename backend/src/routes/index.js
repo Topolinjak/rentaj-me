@@ -1,6 +1,7 @@
 // Router za /api. Nove skupine rut (auth, oprema, rezervacije …) priklopi tukaj.
 import { Router } from 'express';
 import { authRouter } from './auth.js';
+import { uporabnikiRouter } from './uporabniki.js';
 
 export const router = Router();
 
@@ -10,3 +11,4 @@ router.get('/zdravje', (req, res) => {
 });
 
 router.use('/auth', authRouter);
+router.use('/uporabniki', uporabnikiRouter);

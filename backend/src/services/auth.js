@@ -42,3 +42,6 @@ export const javniPodatkiUporabnika = {
   email: true,
   vloga: true,
 };
+
+// Nizka cena bcrypt bi olajšala ugibanje gesel iz ukradene baze; 10 je običajen kompromis.
+export const BCRYPT_CENA = 10;

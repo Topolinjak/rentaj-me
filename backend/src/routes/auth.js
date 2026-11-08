@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { prisma } from '../db.js';
 import { validiraj } from '../middleware/validiraj.js';
+import { emailShema } from '../utils/sheme.js';
 import { zahtevajPrijavo } from '../middleware/avtentikacija.js';
 import {
   IME_PISKOTKA,
@@ -24,7 +25,7 @@ const NAPACNI_PODATKI = 'Napačen e-poštni naslov ali geslo';
 const LAZNI_HASH = await bcrypt.hash(crypto.randomUUID(), 10);
 
 const prijavaShema = z.object({
-  email: z.string().trim().toLowerCase().pipe(z.email('Vnesite veljaven e-poštni naslov.')),
+  email: emailShema,
   geslo: z.string('Vnesite geslo.').min(1, 'Vnesite geslo.'),
 });
 
