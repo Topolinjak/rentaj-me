@@ -1,9 +1,10 @@
 // Rezervacije. Logika je v services/rezervacije.js, tu sta le validacija in dostop.
 import { Router } from 'express';
 import { z } from 'zod';
+import { StatusRezervacije } from '../generated/prisma/enums.ts';
 import { zahtevajPrijavo, zahtevajVlogo } from '../middleware/avtentikacija.js';
 import { validiraj } from '../middleware/validiraj.js';
-import { oddajRezervacijo } from '../services/rezervacije.js';
+import { oddajRezervacijo, seznamRezervacij, stevciRezervacij } from '../services/rezervacije.js';
 import { danes, jeVeljavenDatum } from '../utils/datumi.js';
 import { besedilo, obdobjeShema } from '../utils/sheme.js';
 
@@ -13,6 +14,23 @@ rezervacijeRouter.use(zahtevajPrijavo);
 
 // Vloge, ki si opremo izposojajo. Tehnik in administrator je ne (dokument 02).
 export const IZPOSOJEVALCI = ['STUDENT', 'ASISTENT', 'PROFESOR'];
+
+// Vloge, ki vidijo rezervacije vseh uporabnikov (US-05, US-09).
+const OSEBJE = ['TEHNIK', 'ADMIN'];
+
+// ?status=ODDANA ali ?zamujene=true (ne oboje – zamujene so vedno IZDANA).
+const seznamShema = z
+  .object({
+    status: z.enum(StatusRezervacije, 'Neveljaven status.').optional(),
+    zamujene: z
+      .enum(['true', 'false'], 'Parameter zamujene je lahko true ali false.')
+      .optional()
+      .transform((v) => v === 'true'),
+  })
+  .refine((q) => !(q.status && q.zamujene), {
+    path: ['zamujene'],
+    message: 'Parametrov status in zamujene ni mogoče združiti.',
+  });
 
 const oddajaShema = obdobjeShema()
   .extend({
@@ -39,3 +57,18 @@ rezervacijeRouter.post(
     res.status(201).json(await oddajRezervacijo(req.uporabnik, req.body));
   },
 );
+
+// GET /api/rezervacije – seznam za tehnika (US-05: ?status=ODDANA, US-09: ?zamujene=true).
+rezervacijeRouter.get(
+  '/',
+  zahtevajVlogo(...OSEBJE),
+  validiraj(seznamShema, 'query'),
+  async (req, res) => {
+    res.json(await seznamRezervacij(req.query));
+  },
+);
+
+// GET /api/rezervacije/stevci – števci za nadzorno ploščo tehnika.
+rezervacijeRouter.get('/stevci', zahtevajVlogo(...OSEBJE), async (req, res) => {
+  res.json(await stevciRezervacij());
+});

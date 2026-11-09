@@ -5,6 +5,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { datumiIzTermina, kratekDatum, terminIzDatumov } from '../utils/datumi.js';
 import { praviloZaVlogo, preveriSteviloKosov, preveriTrajanje } from './pravila.js';
 import { zasedaKos } from './termini.js';
+import { dniZamude, jeZamujena, pogojZamujena } from './zamude.js';
 
 export const oznakaKosa = (kos) => `${kos.naziv} (${kos.inventarnaStevilka})`;
 
@@ -105,4 +106,37 @@ export async function oddajRezervacijo(uporabnik, podatki) {
   });
 
   return predstaviRezervacijo(rezervacija);
+}
+
+// Uporabnik pri rezervacijah na seznamih za tehnika (US-05: ime in vloga, US-09: e-pošta).
+const vkljuciUporabnika = {
+  uporabnik: { select: { id: true, ime: true, priimek: true, email: true, vloga: true } },
+};
+
+// Seznam rezervacij za tehnika (US-05, US-09).
+//  - zamujene: IZDANA s potečenim rokom, od največje zamude (najzgodnejši konec) naprej;
+//  - sicer po želji filtrirano po statusu, od najstarejše oddaje naprej.
+// Vsaka rezervacija ima zraven izračunana polja zamujena in dniZamude (ADR-0007).
+export async function seznamRezervacij({ status, zamujene }, zdaj = new Date()) {
+  const rezervacije = await prisma.rezervacija.findMany({
+    where: zamujene ? pogojZamujena(zdaj) : { status },
+    orderBy: zamujene ? [{ konec: 'asc' }, { id: 'asc' }] : [{ ustvarjeno: 'asc' }, { id: 'asc' }],
+    include: { ...vkljuciKose, ...vkljuciUporabnika },
+  });
+
+  return rezervacije.map((r) => ({
+    ...predstaviRezervacijo(r),
+    zamujena: jeZamujena(r, zdaj),
+    dniZamude: dniZamude(r, zdaj),
+  }));
+}
+
+// Števci za nadzorno ploščo tehnika. Izdane vključujejo tudi zamujene.
+export async function stevciRezervacij(zdaj = new Date()) {
+  const [oddane, izdane, zamujene] = await Promise.all([
+    prisma.rezervacija.count({ where: { status: 'ODDANA' } }),
+    prisma.rezervacija.count({ where: { status: 'IZDANA' } }),
+    prisma.rezervacija.count({ where: pogojZamujena(zdaj) }),
+  ]);
+  return { oddane, izdane, zamujene };
 }
