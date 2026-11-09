@@ -60,3 +60,13 @@ export async function ustvariRezervacijo({ uporabnikId, kosi, ...podatki }) {
     include: { postavke: true },
   });
 }
+
+// Začetna pravila izposoje (kot v seedu). Oddaja rezervacije brez pravila vrne 403.
+export const PRIVZETA_PRAVILA = [
+  { vloga: 'STUDENT', maxKosov: 3, maxDni: 7, maxDniDolgorocno: null },
+  { vloga: 'ASISTENT', maxKosov: 20, maxDni: 7, maxDniDolgorocno: null },
+  { vloga: 'PROFESOR', maxKosov: 20, maxDni: 7, maxDniDolgorocno: 180 },
+];
+
+export const ustvariPravila = (pravila = PRIVZETA_PRAVILA) =>
+  prisma.praviloIzposoje.createMany({ data: pravila });

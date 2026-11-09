@@ -65,6 +65,7 @@ flowchart LR
 | `GET /api/uporabniki?iskanje=` | Seznam uporabnikov z iskanjem po imenu, priimku in e-pošti | admin |
 | `POST /api/uporabniki` | Nov uporabnik z vlogo in začetnim geslom | admin |
 | `PATCH /api/uporabniki/:id` | Urejanje, ponastavitev gesla in (de)aktivacija (brez brisanja) | admin |
+| `GET /api/pravila/moje` | Omejitve prijavljenega uporabnika `{ vloga, maxKosov, maxDni, dolgorocna, maxDniDolgorocno, aktivnihKosov }` za namig v obrazcu | študent, asistent, profesor |
 | `/api/pravila` | Upravljanje pravil izposoje | admin |
 
 ### Podatkovna baza
