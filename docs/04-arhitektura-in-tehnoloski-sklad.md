@@ -57,7 +57,9 @@ flowchart LR
 | `POST /api/rezervacije` | Oddaja rezervacije `{ kosi, od, do, namen, dolgorocna }` s preverjanjem razpoložljivosti, prekrivanja in pravil | študent, asistent, profesor |
 | `GET /api/rezervacije/moje` | Lastne rezervacije | študent, asistent, profesor |
 | `PATCH /api/rezervacije/:id/preklic` | Preklic oddane rezervacije | lastnik rezervacije |
-| `GET /api/rezervacije` | Vse rezervacije s filtri (npr. oddane, zamujene) | tehnik, admin |
+| `GET /api/rezervacije?status=&zamujene=` | Vse rezervacije s filtri (npr. `status=ODDANA`, `zamujene=true`); vsaka vsebuje `zamujena`, `dniZamude` in opozorili `steviloZamud`, `steviloNeporavnanihPoskodb` za svojega uporabnika | tehnik, admin |
+| `GET /api/rezervacije/stevci` | Števci za nadzorno ploščo `{ oddane, izdane, zamujene }` | tehnik, admin |
+| `GET /api/rezervacije/:id/opozorila` | Zamujene izposoje in neporavnane poškodbe uporabnika te rezervacije `{ uporabnik, zamujene, poskodbe }` (klik na opozorilo) | tehnik, admin |
 | `PATCH /api/rezervacije/:id/odobritev` | Odobritev | tehnik |
 | `PATCH /api/rezervacije/:id/zavrnitev` | Zavrnitev z razlogom | tehnik |
 | `PATCH /api/rezervacije/:id/izdaja` | Izdaja opreme in stanje ob izdaji | tehnik |
