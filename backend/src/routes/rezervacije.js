@@ -7,6 +7,7 @@ import { validiraj } from '../middleware/validiraj.js';
 import {
   oddajRezervacijo,
   odobriRezervacijo,
+  opozorilaZaRezervacijo,
   seznamRezervacij,
   stevciRezervacij,
   zavrniRezervacijo,
@@ -83,6 +84,17 @@ rezervacijeRouter.get(
 rezervacijeRouter.get('/stevci', zahtevajVlogo(...OSEBJE), async (req, res) => {
   res.json(await stevciRezervacij());
 });
+
+// GET /api/rezervacije/:id/opozorila – zamujene izposoje in neporavnane poškodbe uporabnika,
+// ki je oddal rezervacijo :id (US-11, klik na opozorilo).
+rezervacijeRouter.get(
+  '/:id/opozorila',
+  zahtevajVlogo(...OSEBJE),
+  validiraj(idShema, 'params'),
+  async (req, res) => {
+    res.json(await opozorilaZaRezervacijo(req.params.id));
+  },
+);
 
 // PATCH /api/rezervacije/:id/odobritev – le tehnik, tudi administrator ne (US-05).
 rezervacijeRouter.patch(

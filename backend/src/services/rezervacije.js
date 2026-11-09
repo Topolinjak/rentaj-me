@@ -4,6 +4,7 @@ import { prisma } from '../db.js';
 import { ApiError } from '../utils/ApiError.js';
 import { datumiIzTermina, kratekDatum, terminIzDatumov } from '../utils/datumi.js';
 import { praviloZaVlogo, preveriSteviloKosov, preveriTrajanje } from './pravila.js';
+import { opozorilaUporabnika, stevciOpozoril } from './opozorila.js';
 import { spremeniStatus } from './statusi.js';
 import { zasedaKos } from './termini.js';
 import { dniZamude, jeZamujena, pogojZamujena } from './zamude.js';
@@ -114,22 +115,43 @@ const vkljuciUporabnika = {
   uporabnik: { select: { id: true, ime: true, priimek: true, email: true, vloga: true } },
 };
 
-// Seznam rezervacij za tehnika (US-05, US-09).
+// Seznam rezervacij za tehnika (US-05, US-09, US-11).
 //  - zamujene: IZDANA s potečenim rokom, od največje zamude (najzgodnejši konec) naprej;
 //  - sicer po želji filtrirano po statusu, od najstarejše oddaje naprej.
-// Vsaka rezervacija ima zraven izračunana polja zamujena in dniZamude (ADR-0007).
+// Vsaka rezervacija ima zraven izračunana polja zamujena in dniZamude (ADR-0007) ter
+// opozorila o uporabniku (steviloZamud, steviloNeporavnanihPoskodb).
 export async function seznamRezervacij({ status, zamujene }, zdaj = new Date()) {
   const rezervacije = await prisma.rezervacija.findMany({
     where: zamujene ? pogojZamujena(zdaj) : { status },
     orderBy: zamujene ? [{ konec: 'asc' }, { id: 'asc' }] : [{ ustvarjeno: 'asc' }, { id: 'asc' }],
     include: { ...vkljuciKose, ...vkljuciUporabnika },
   });
+  const opozorila = await stevciOpozoril(
+    rezervacije.map((r) => r.uporabnikId),
+    zdaj,
+  );
 
   return rezervacije.map((r) => ({
     ...predstaviRezervacijo(r),
     zamujena: jeZamujena(r, zdaj),
     dniZamude: dniZamude(r, zdaj),
+    ...opozorila.get(r.uporabnikId),
   }));
+}
+
+// Podrobnosti opozoril za uporabnika rezervacije `id` (US-11, klik na opozorilo).
+export async function opozorilaZaRezervacijo(id, zdaj = new Date()) {
+  const rezervacija = await prisma.rezervacija.findUnique({
+    where: { id },
+    select: vkljuciUporabnika,
+  });
+  if (!rezervacija) {
+    throw new ApiError(404, 'Rezervacija ne obstaja.');
+  }
+  return {
+    uporabnik: rezervacija.uporabnik,
+    ...(await opozorilaUporabnika(rezervacija.uporabnik.id, zdaj)),
+  };
 }
 
 // Števci za nadzorno ploščo tehnika. Izdane vključujejo tudi zamujene.
