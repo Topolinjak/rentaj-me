@@ -4,6 +4,7 @@ import { prisma } from '../db.js';
 import { ApiError } from '../utils/ApiError.js';
 import { datumiIzTermina, kratekDatum, terminIzDatumov } from '../utils/datumi.js';
 import { praviloZaVlogo, preveriSteviloKosov, preveriTrajanje } from './pravila.js';
+import { spremeniStatus } from './statusi.js';
 import { zasedaKos } from './termini.js';
 import { dniZamude, jeZamujena, pogojZamujena } from './zamude.js';
 
@@ -139,4 +140,28 @@ export async function stevciRezervacij(zdaj = new Date()) {
     prisma.rezervacija.count({ where: pogojZamujena(zdaj) }),
   ]);
   return { oddane, izdane, zamujene };
+}
+
+// Odobritev oddane rezervacije (US-05). Termin je zaseden že od oddaje, zato prekrivanja
+// tu ni treba ponovno preverjati (dokument 03).
+export async function odobriRezervacijo(id, tehnik) {
+  const rezervacija = await spremeniStatus(
+    id,
+    'ODOBRENA',
+    { obdelalId: tehnik.id },
+    { include: vkljuciKose },
+  );
+  return predstaviRezervacijo(rezervacija);
+}
+
+// Zavrnitev z razlogom in neobveznim komentarjem (US-06). ZAVRNJENA ni med statusi, ki
+// zasedajo termin (termini.js), zato so kosi takoj spet prosti.
+export async function zavrniRezervacijo(id, tehnik, { razlogZavrnitve, komentarTehnika }) {
+  const rezervacija = await spremeniStatus(
+    id,
+    'ZAVRNJENA',
+    { obdelalId: tehnik.id, razlogZavrnitve, komentarTehnika },
+    { include: vkljuciKose },
+  );
+  return predstaviRezervacijo(rezervacija);
 }

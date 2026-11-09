@@ -1,12 +1,18 @@
 // Rezervacije. Logika je v services/rezervacije.js, tu sta le validacija in dostop.
 import { Router } from 'express';
 import { z } from 'zod';
-import { StatusRezervacije } from '../generated/prisma/enums.ts';
+import { RazlogZavrnitve, StatusRezervacije } from '../generated/prisma/enums.ts';
 import { zahtevajPrijavo, zahtevajVlogo } from '../middleware/avtentikacija.js';
 import { validiraj } from '../middleware/validiraj.js';
-import { oddajRezervacijo, seznamRezervacij, stevciRezervacij } from '../services/rezervacije.js';
+import {
+  oddajRezervacijo,
+  odobriRezervacijo,
+  seznamRezervacij,
+  stevciRezervacij,
+  zavrniRezervacijo,
+} from '../services/rezervacije.js';
 import { danes, jeVeljavenDatum } from '../utils/datumi.js';
-import { besedilo, obdobjeShema } from '../utils/sheme.js';
+import { besedilo, idShema, neobveznoBesedilo, obdobjeShema } from '../utils/sheme.js';
 
 export const rezervacijeRouter = Router();
 
@@ -31,6 +37,11 @@ const seznamShema = z
     path: ['zamujene'],
     message: 'Parametrov status in zamujene ni mogoče združiti.',
   });
+
+const zavrnitevShema = z.object({
+  razlogZavrnitve: z.enum(RazlogZavrnitve, 'Izberite razlog zavrnitve.'),
+  komentarTehnika: neobveznoBesedilo,
+});
 
 const oddajaShema = obdobjeShema()
   .extend({
@@ -72,3 +83,24 @@ rezervacijeRouter.get(
 rezervacijeRouter.get('/stevci', zahtevajVlogo(...OSEBJE), async (req, res) => {
   res.json(await stevciRezervacij());
 });
+
+// PATCH /api/rezervacije/:id/odobritev – le tehnik, tudi administrator ne (US-05).
+rezervacijeRouter.patch(
+  '/:id/odobritev',
+  zahtevajVlogo('TEHNIK'),
+  validiraj(idShema, 'params'),
+  async (req, res) => {
+    res.json(await odobriRezervacijo(req.params.id, req.uporabnik));
+  },
+);
+
+// PATCH /api/rezervacije/:id/zavrnitev – le tehnik, razlog je obvezen (US-06).
+rezervacijeRouter.patch(
+  '/:id/zavrnitev',
+  zahtevajVlogo('TEHNIK'),
+  validiraj(idShema, 'params'),
+  validiraj(zavrnitevShema),
+  async (req, res) => {
+    res.json(await zavrniRezervacijo(req.params.id, req.uporabnik, req.body));
+  },
+);
