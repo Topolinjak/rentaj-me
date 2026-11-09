@@ -3,6 +3,7 @@
 import { prisma } from '../db.js';
 import { ApiError } from '../utils/ApiError.js';
 import { datumiIzTermina, kratekDatum, terminIzDatumov } from '../utils/datumi.js';
+import { praviloZaVlogo, preveriSteviloKosov, preveriTrajanje } from './pravila.js';
 import { zasedaKos } from './termini.js';
 
 export const oznakaKosa = (kos) => `${kos.naziv} (${kos.inventarnaStevilka})`;
@@ -63,7 +64,12 @@ export async function oddajRezervacijo(uporabnik, podatki) {
   const termin = terminIzDatumov(podatki.od, podatki.do);
 
   const rezervacija = await prisma.$transaction(async (tx) => {
+    // Pravilo se prebere ob vsaki oddaji, zato sprememba pravil velja takoj (US-04).
+    const pravilo = await praviloZaVlogo(tx, uporabnik.vloga);
+    preveriTrajanje(uporabnik, pravilo, podatki);
+
     const kosi = await preveriKose(tx, podatki.kosi);
+    await preveriSteviloKosov(tx, uporabnik, pravilo, kosi.length);
     await preveriPrekrivanje(tx, kosi, termin);
 
     return tx.rezervacija.create({

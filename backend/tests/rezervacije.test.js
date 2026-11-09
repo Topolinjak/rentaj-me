@@ -1,7 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { prisma } from '../src/db.js';
 import { terminIzDatumov } from '../src/utils/datumi.js';
-import { api, ustvariKos, ustvariRezervacijo, ustvariUporabnika } from './pomocniki.js';
+import {
+  api,
+  ustvariKos,
+  ustvariPravila,
+  ustvariRezervacijo,
+  ustvariUporabnika,
+} from './pomocniki.js';
 
 // Fiksen »danes« (10. 11. 2026 v Ljubljani), da so datumi v testih stabilni. Le Date –
 // pravi časovniki ostanejo, sicer bi se ustavili supertest in povezave z bazo.
@@ -13,6 +19,7 @@ afterEach(() => vi.useRealTimers());
 
 let student;
 beforeEach(async () => {
+  await ustvariPravila();
   student = await ustvariUporabnika({ vloga: 'STUDENT' });
 });
 
