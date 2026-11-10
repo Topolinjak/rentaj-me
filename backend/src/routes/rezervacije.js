@@ -1,10 +1,11 @@
 // Rezervacije. Logika je v services/rezervacije.js, tu sta le validacija in dostop.
 import { Router } from 'express';
 import { z } from 'zod';
-import { RazlogZavrnitve, StatusRezervacije } from '../generated/prisma/enums.ts';
+import { RazlogZavrnitve, StanjeOpreme, StatusRezervacije } from '../generated/prisma/enums.ts';
 import { zahtevajPrijavo, zahtevajVlogo } from '../middleware/avtentikacija.js';
 import { validiraj } from '../middleware/validiraj.js';
 import {
+  izdajRezervacijo,
   oddajRezervacijo,
   odobriRezervacijo,
   opozorilaZaRezervacijo,
@@ -42,6 +43,19 @@ const seznamShema = z
 const zavrnitevShema = z.object({
   razlogZavrnitve: z.enum(RazlogZavrnitve, 'Izberite razlog zavrnitve.'),
   komentarTehnika: neobveznoBesedilo,
+});
+
+// Stanje vsakega kosa ob izdaji: { kosi: [{ id, stanje }] }.
+const izdajaShema = z.object({
+  kosi: z
+    .array(
+      z.object({
+        id: z.number('Neveljaven kos.').int().positive('Neveljaven kos.'),
+        stanje: z.enum(StanjeOpreme, 'Izberite stanje kosa.'),
+      }),
+      'Izberite stanje za vse kose.',
+    )
+    .min(1, 'Izberite stanje za vse kose.'),
 });
 
 const oddajaShema = obdobjeShema()
@@ -114,5 +128,16 @@ rezervacijeRouter.patch(
   validiraj(zavrnitevShema),
   async (req, res) => {
     res.json(await zavrniRezervacijo(req.params.id, req.uporabnik, req.body));
+  },
+);
+
+// PATCH /api/rezervacije/:id/izdaja – le tehnik, stanje za vsak kos je obvezno (US-07).
+rezervacijeRouter.patch(
+  '/:id/izdaja',
+  zahtevajVlogo('TEHNIK'),
+  validiraj(idShema, 'params'),
+  validiraj(izdajaShema),
+  async (req, res) => {
+    res.json(await izdajRezervacijo(req.params.id, req.body));
   },
 );

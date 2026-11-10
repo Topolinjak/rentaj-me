@@ -187,3 +187,53 @@ export async function zavrniRezervacijo(id, tehnik, { razlogZavrnitve, komentarT
   );
   return predstaviRezervacijo(rezervacija);
 }
+
+// Ali `kosi` ([{ id, stanje }]) vsebujejo natanko kose iz postavk rezervacije – vsakega enkrat.
+function preveriStanjaKosov(postavke, kosi) {
+  const vRezervaciji = new Set(postavke.map((p) => p.kosOpremeId));
+  const podani = new Set(kosi.map((k) => k.id));
+  const manjka = postavke.find((p) => !podani.has(p.kosOpremeId));
+  if (manjka) {
+    throw new ApiError(400, `Izberite stanje za ${oznakaKosa(manjka.kosOpreme)}.`);
+  }
+  if (podani.size !== kosi.length || kosi.some((k) => !vRezervaciji.has(k.id))) {
+    throw new ApiError(400, 'Stanja se morajo ujemati s kosi v rezervaciji.');
+  }
+}
+
+// Izdaja opreme (US-07): le iz ODOBRENA (spremeniStatus, sicer 409). V isti transakciji
+// zapiše stanje vsakega kosa ob izdaji in izdanoOb. trenutnoStanje kosa se posodobi na
+// stanje ob izdaji, ker je to zadnje znano stanje (privzeta izbira pri naslednji izdaji).
+export async function izdajRezervacijo(id, { kosi }, zdaj = new Date()) {
+  const stanjePoKosu = new Map(kosi.map((k) => [k.id, k.stanje]));
+
+  const rezervacija = await spremeniStatus(
+    id,
+    'IZDANA',
+    { izdanoOb: zdaj },
+    {
+      include: vkljuciKose,
+      dodatno: async (tx) => {
+        const postavke = await tx.postavkaRezervacije.findMany({
+          where: { rezervacijaId: id },
+          include: { kosOpreme: true },
+          orderBy: { kosOpremeId: 'asc' },
+        });
+        preveriStanjaKosov(postavke, kosi);
+
+        for (const p of postavke) {
+          const stanje = stanjePoKosu.get(p.kosOpremeId);
+          await tx.postavkaRezervacije.update({
+            where: { id: p.id },
+            data: { stanjeObIzdaji: stanje },
+          });
+          await tx.kosOpreme.update({
+            where: { id: p.kosOpremeId },
+            data: { trenutnoStanje: stanje },
+          });
+        }
+      },
+    },
+  );
+  return predstaviRezervacijo(rezervacija);
+}
