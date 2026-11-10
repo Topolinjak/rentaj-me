@@ -26,6 +26,27 @@ describe('GET /api/oprema (katalog)', () => {
     });
   });
 
+  it('?vsi=true: tehnik in administrator vidita tudi umaknjene', async () => {
+    const naVoljo = await ustvariKos({ naziv: 'A naprava' });
+    const umaknjen = await ustvariKos({ naziv: 'B naprava', status: 'UMAKNJEN' });
+
+    for (const vloga of ['TEHNIK', 'ADMIN']) {
+      const { piskotek } = await ustvariUporabnika({ vloga });
+      const odgovor = await api().get('/api/oprema?vsi=true').set('Cookie', piskotek);
+      expect(odgovor.status).toBe(200);
+      expect(odgovor.body.map((k) => k.id)).toEqual([naVoljo.id, umaknjen.id]);
+    }
+  });
+
+  it('?vsi=true za študenta vrne 403, neveljavna vrednost 400', async () => {
+    expect((await api().get('/api/oprema?vsi=true').set('Cookie', student.piskotek)).status).toBe(
+      403,
+    );
+    expect((await api().get('/api/oprema?vsi=da').set('Cookie', student.piskotek)).status).toBe(
+      400,
+    );
+  });
+
   it('neprijavljen dobi 401', async () => {
     expect((await api().get('/api/oprema')).status).toBe(401);
   });

@@ -1,12 +1,12 @@
 // Uporabniki (US-18, administrator): tabela z iskanjem, nov uporabnik, (de)aktivacija.
 import { useState } from 'react';
-import { napakePoPoljih } from '../api/klic.js';
 import { seznamUporabnikov, spremeniUporabnika, ustvariUporabnika } from '../api/uporabniki.js';
 import { useUporabnik } from '../auth/useUporabnik.js';
 import { OZNAKE_VLOG } from '../auth/vloge.js';
 import GlavaStrani from '../components/GlavaStrani.jsx';
 import Gumb from '../components/Gumb.jsx';
 import NapakaNalaganja from '../components/NapakaNalaganja.jsx';
+import NapakaObrazca from '../components/NapakaObrazca.jsx';
 import PogovornoOkno, { PotrditvenoOkno } from '../components/PogovornoOkno.jsx';
 import Polje from '../components/Polje.jsx';
 import PraznoStanje from '../components/PraznoStanje.jsx';
@@ -14,6 +14,7 @@ import { SkeletTabele } from '../components/Skelet.jsx';
 import { Znacka } from '../components/StatusnaZnacka.jsx';
 import Tabela from '../components/Tabela.jsx';
 import Vsebina from '../components/Vsebina.jsx';
+import { useObrazec } from '../hooks/useObrazec.js';
 import { usePodatki } from '../hooks/usePodatki.js';
 import { useObvestila } from '../obvestila/useObvestila.js';
 
@@ -31,41 +32,19 @@ function ustreza(uporabnik, iskanje) {
 }
 
 function NovUporabnik({ odprto, onZapri, onUstvarjen }) {
-  const [podatki, setPodatki] = useState(PRAZEN_OBRAZEC);
-  const [napake, setNapake] = useState({});
-  const [napaka, setNapaka] = useState(null);
-  const [posiljanje, setPosiljanje] = useState(false);
-
-  const polje = (ime) => ({
-    name: ime,
-    value: podatki[ime],
-    onChange: (e) => setPodatki((p) => ({ ...p, [ime]: e.target.value })),
-    napaka: napake[ime],
-  });
+  const obrazec = useObrazec(PRAZEN_OBRAZEC, ustvariUporabnika, { polje409: 'email' });
+  const { polje, posiljanje, napaka } = obrazec;
 
   function zapri() {
-    setPodatki(PRAZEN_OBRAZEC);
-    setNapake({});
-    setNapaka(null);
+    obrazec.ponastavi();
     onZapri();
   }
 
   async function oddaj(dogodek) {
-    dogodek.preventDefault();
-    setPosiljanje(true);
-    setNapake({});
-    setNapaka(null);
-    try {
-      const nov = await ustvariUporabnika(podatki);
+    const nov = await obrazec.oddaj(dogodek);
+    if (nov) {
       onUstvarjen(nov);
       zapri();
-    } catch (e) {
-      if (e.napake?.length) setNapake(napakePoPoljih(e));
-      // 409: e-poštni naslov že obstaja – napaka sodi k polju.
-      else if (e.status === 409) setNapake({ email: e.message });
-      else setNapaka(e.message);
-    } finally {
-      setPosiljanje(false);
     }
   }
 
@@ -111,14 +90,7 @@ function NovUporabnik({ odprto, onZapri, onUstvarjen }) {
           pomoc="Vsaj 8 znakov."
           {...polje('geslo')}
         />
-        {napaka && (
-          <p
-            role="alert"
-            className="rounded-osnovni bg-napaka-ozadje px-3 py-2 text-sm text-napaka sm:col-span-2"
-          >
-            {napaka}
-          </p>
-        )}
+        <NapakaObrazca napaka={napaka} className="sm:col-span-2" />
       </form>
     </PogovornoOkno>
   );

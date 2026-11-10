@@ -48,6 +48,7 @@ flowchart LR
 | `POST /api/auth/odjava` | Odjava, izbriše piškotek | prijavljeni |
 | `GET /api/auth/jaz` | Podatki o prijavljenem uporabniku in vlogi | prijavljeni |
 | `GET /api/oprema` | Katalog opreme (brez umaknjenih kosov); iskanje in filtri v P-14 | prijavljeni |
+| `GET /api/oprema?vsi=true` | Inventar: vsi kosi, tudi umaknjeni | tehnik, admin |
 | `GET /api/oprema/:id` | Podrobnosti kosa (`404` za umaknjen kos) | prijavljeni |
 | `GET /api/oprema/:id/zasedenost?od=&do=` | Zasedena obdobja kosa `[{ od, do }]` v obdobju od–do, brez podatkov o uporabniku | prijavljeni |
 | `POST /api/oprema` | Nov kos opreme (status `NA_VOLJO`) | tehnik, admin |

@@ -57,10 +57,22 @@ async function najdiKosVKatalogu(id) {
   return kos;
 }
 
-// GET /api/oprema – katalog: vsi kosi razen umaknjenih, s kategorijo.
-opremaRouter.get('/', async (req, res) => {
+// ?vsi=true: tudi umaknjeni kosi, za inventar tehnika in administratorja (US-19).
+const seznamShema = z.object({
+  vsi: z
+    .enum(['true', 'false'], 'Parameter vsi je lahko true ali false.')
+    .optional()
+    .transform((v) => v === 'true'),
+});
+
+// GET /api/oprema – katalog: vsi kosi razen umaknjenih, s kategorijo. Z ?vsi=true (le tehnik in
+// administrator) tudi umaknjeni.
+opremaRouter.get('/', validiraj(seznamShema, 'query'), async (req, res) => {
+  if (req.query.vsi && !['TEHNIK', 'ADMIN'].includes(req.uporabnik.vloga)) {
+    throw new ApiError(403, 'Za to dejanje nimate pravic.');
+  }
   const kosi = await prisma.kosOpreme.findMany({
-    where: { status: { not: 'UMAKNJEN' } },
+    where: req.query.vsi ? undefined : { status: { not: 'UMAKNJEN' } },
     include: vkljuciKategorijo,
     orderBy: [{ naziv: 'asc' }, { inventarnaStevilka: 'asc' }],
   });
