@@ -48,3 +48,12 @@ export const OZNAKE_RAZLOGOV = {
   POTREBNA_ZA_VAJE: 'Oprema potrebna za izvedbo vaj',
   NEUSTREZEN_NAMEN: 'Neustrezen namen izposoje',
 };
+
+// Slovenska oblika po številu: oblike = [ednina, dvojina, 3–4, 5+]; odloča ostanek pri 100.
+export function poStevilu(n, [ednina, dvojina, malo, mnogo]) {
+  const ostanek = Math.abs(n) % 100;
+  if (ostanek === 1) return `${n} ${ednina}`;
+  if (ostanek === 2) return `${n} ${dvojina}`;
+  if (ostanek === 3 || ostanek === 4) return `${n} ${malo}`;
+  return `${n} ${mnogo}`;
+}
