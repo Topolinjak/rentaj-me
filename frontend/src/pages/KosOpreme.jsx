@@ -4,14 +4,18 @@
 import { useCallback, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { kosOpreme, zasedenost } from '../api/oprema.js';
+import Gumb from '../components/Gumb.jsx';
 import Ikona from '../components/Ikona.jsx';
 import Koledar from '../components/Koledar.jsx';
 import { PlaceholderSlike } from '../components/KarticaOpreme.jsx';
 import NapakaNalaganja from '../components/NapakaNalaganja.jsx';
+import ObrazecRezervacije from '../components/ObrazecRezervacije.jsx';
 import { ZnackaOpreme, ZnackaStanja } from '../components/StatusnaZnacka.jsx';
 import Vsebina from '../components/Vsebina.jsx';
 import { usePodatki } from '../hooks/usePodatki.js';
+import { useIzbira } from '../izbira/useIzbira.js';
 import { danes, mesecDatuma, obdobje, prviDanMeseca, zadnjiDanMeseca } from '../utils/datumi.js';
+import { izberiDanVTerminu } from '../utils/termin.js';
 
 function NazajNaKatalog() {
   return (
@@ -80,6 +84,8 @@ export default function KosOpreme() {
   const { id } = useParams();
   const nalozi = useCallback(({ signal }) => kosOpreme(id, { signal }), [id]);
   const { podatki: kos, nalaganje, napaka, statusNapake, osvezi } = usePodatki(nalozi);
+  const izbira = useIzbira();
+  const [termin, setTermin] = useState({ od: '', do: '' });
 
   if (nalaganje) {
     return (
@@ -135,6 +141,23 @@ export default function KosOpreme() {
               </>
             )}
           </dl>
+          {kos.status === 'NA_VOLJO' && (
+            <div className="mt-6">
+              <Gumb
+                razlicica="sekundarni"
+                ikona={izbira.vsebuje(kos.id) ? 'kljukica' : 'plus'}
+                aria-pressed={izbira.vsebuje(kos.id)}
+                onClick={() =>
+                  izbira.vsebuje(kos.id) ? izbira.odstrani(kos.id) : izbira.dodaj(kos)
+                }
+              >
+                {izbira.vsebuje(kos.id) ? 'Dodano k rezervaciji' : 'Dodaj k rezervaciji'}
+              </Gumb>
+              <p className="mt-2 text-sm text-gray-600">
+                Za rezervacijo več kosov hkrati jih dodajte in nadaljujte v katalogu.
+              </p>
+            </div>
+          )}
           {kos.status === 'V_OKVARI' && (
             <p className="mt-6 rounded-osnovni bg-opozorilo-ozadje px-3 py-2 text-sm text-opozorilo">
               Kos je v okvari, zato ga trenutno ni mogoče rezervirati.
@@ -142,7 +165,27 @@ export default function KosOpreme() {
           )}
         </div>
 
-        <ZasedenostKosa id={kos.id} />
+        <div className="space-y-8">
+          <ZasedenostKosa
+            id={kos.id}
+            izbrano={termin.od ? termin : undefined}
+            onIzberiDan={
+              kos.status === 'NA_VOLJO'
+                ? (datum) => setTermin((t) => izberiDanVTerminu(t, datum))
+                : undefined
+            }
+          />
+          {kos.status === 'NA_VOLJO' && (
+            <ObrazecRezervacije
+              // Ta kos in kosi, ki jih je uporabnik že izbral v katalogu (I-24).
+              kosi={[kos, ...izbira.kosi.filter((k) => k.id !== kos.id)]}
+              termin={termin}
+              onTermin={setTermin}
+              onOdstrani={(id) => izbira.odstrani(id)}
+              zaklenjen={kos.id}
+            />
+          )}
+        </div>
       </div>
     </Vsebina>
   );

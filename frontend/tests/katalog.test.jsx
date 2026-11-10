@@ -64,9 +64,9 @@ describe('katalog (US-02)', () => {
     ).toBe('/oprema/12');
   });
 
-  it('Rezerviraj vodi na stran kosa', async () => {
+  it('Podrobnosti vodijo na stran kosa', async () => {
     odpri();
-    const povezava = await screen.findByRole('link', { name: 'Rezerviraj: Arduino Uno (A-014)' });
+    const povezava = await screen.findByRole('link', { name: 'Podrobnosti: Arduino Uno (A-014)' });
     expect(povezava.getAttribute('href')).toBe('/oprema/11');
   });
 

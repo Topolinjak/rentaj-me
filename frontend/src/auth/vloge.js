@@ -18,9 +18,11 @@ export function zacetnaStran(vloga) {
   return '/katalog';
 }
 
+// »Rezervacija« pokaže število izbranih kosov (I-24, Glava.jsx).
 const MENI_IZPOSOJEVALCA = [
   { pot: '/katalog', oznaka: 'Katalog' },
   { pot: '/moje-izposoje', oznaka: 'Moje izposoje' },
+  { pot: '/rezervacija', oznaka: 'Rezervacija', izbira: true },
 ];
 
 const MENI = {

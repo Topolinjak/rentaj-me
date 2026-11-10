@@ -30,3 +30,12 @@ export function steviloDniBesedilo(n) {
   if (ostanek === 3 || ostanek === 4) return `${n} dnevi`;
   return `${n} dni`;
 }
+
+// »1 kos«, »2 kosa«, »3 kosi«, »5 kosov« (enako pravilo kot pri dnevih).
+export function steviloKosovBesedilo(n) {
+  const ostanek = Math.abs(n) % 100;
+  if (ostanek === 1) return `${n} kos`;
+  if (ostanek === 2) return `${n} kosa`;
+  if (ostanek === 3 || ostanek === 4) return `${n} kosi`;
+  return `${n} kosov`;
+}

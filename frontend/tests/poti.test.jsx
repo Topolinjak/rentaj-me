@@ -125,7 +125,7 @@ describe('glava', () => {
   });
 
   it.each([
-    ['STUDENT', ['Katalog', 'Moje izposoje']],
+    ['STUDENT', ['Katalog', 'Moje izposoje', 'Rezervacija']],
     ['ADMIN', ['Uporabniki', 'Kategorije', 'Inventar']],
   ])('meni za vlogo %s', async (vloga, oznake) => {
     izrisi('/', { vloga });

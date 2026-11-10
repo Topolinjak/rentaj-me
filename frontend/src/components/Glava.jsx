@@ -5,16 +5,29 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router';
 import logo from '../assets/logo-um-fnm-odt.jpg';
 import { useUporabnik } from '../auth/useUporabnik.js';
+import { useIzbira } from '../izbira/useIzbira.js';
 import { meniZaVlogo, OZNAKE_VLOG } from '../auth/vloge.js';
 
 const ALT_LOGOTIPA =
   'Univerza v Mariboru, Fakulteta za naravoslovje in matematiko, Oddelek za tehniko';
+
+// Število izbranih kosov ob povezavi Rezervacija; bralnik zaslona prebere »izbranih kosov: 2«.
+function SteviloIzbranih({ n }) {
+  if (n === 0) return null;
+  return (
+    <span className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-brand-600 px-1.5 text-xs font-bold text-white">
+      <span className="sr-only">izbranih kosov: </span>
+      {n}
+    </span>
+  );
+}
 
 const gumbOdjava =
   'rounded-osnovni border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100';
 
 export default function Glava() {
   const { uporabnik, odjavi } = useUporabnik();
+  const { kosi: izbrani } = useIzbira();
   const navigiraj = useNavigate();
   const [meniOdprt, setMeniOdprt] = useState(false);
 
@@ -63,6 +76,7 @@ export default function Glava() {
                       <span className="border-b-2 border-transparent pb-1 group-aria-[current=page]:border-brand-600">
                         {povezava.oznaka}
                       </span>
+                      {povezava.izbira && <SteviloIzbranih n={izbrani.length} />}
                     </NavLink>
                   </li>
                 ))}
@@ -116,6 +130,7 @@ export default function Glava() {
                     className="flex min-h-11 items-center border-l-4 border-transparent px-4 font-medium text-gray-900 hover:bg-gray-100 aria-[current=page]:border-brand-600 aria-[current=page]:bg-brand-50 aria-[current=page]:text-brand-600"
                   >
                     {povezava.oznaka}
+                    {povezava.izbira && <SteviloIzbranih n={izbrani.length} />}
                   </NavLink>
                 </li>
               ))}

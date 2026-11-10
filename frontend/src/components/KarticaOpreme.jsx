@@ -2,7 +2,8 @@
 // (slike niso del MVP), naziv, inventarna številka, značka statusa in dejanja. Kos v okvari
 // ima onemogočen gumb Rezerviraj in razlog v besedilu, ne le siv gumb.
 import { useId } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { useIzbira } from '../izbira/useIzbira.js';
 import Gumb from './Gumb.jsx';
 import Ikona from './Ikona.jsx';
 import { slogGumba } from './slogGumba.js';
@@ -20,9 +21,13 @@ export function PlaceholderSlike({ kategorija, className = '' }) {
   );
 }
 
-export default function KarticaOpreme({ kos, dejanje }) {
+export default function KarticaOpreme({ kos }) {
   const idRazloga = useId();
+  const navigiraj = useNavigate();
+  const { dodaj, odstrani, vsebuje } = useIzbira();
   const vOkvari = kos.status === 'V_OKVARI';
+  const izbran = vsebuje(kos.id);
+  const oznaka = `${kos.naziv} (${kos.inventarnaStevilka})`;
 
   return (
     <article className="flex flex-col rounded-osnovni border border-gray-300 bg-white p-4">
@@ -39,26 +44,46 @@ export default function KarticaOpreme({ kos, dejanje }) {
           Kos je v okvari, zato ga trenutno ni mogoče rezervirati.
         </p>
       )}
-      <div className="mt-auto flex flex-wrap gap-2 pt-4">
+      <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
         {vOkvari ? (
-          <Gumb disabled aria-describedby={idRazloga} className="flex-1">
+          <Gumb disabled aria-describedby={idRazloga} className="col-span-2">
             Rezerviraj
           </Gumb>
         ) : (
-          (dejanje ?? (
-            <Link
-              to={`/oprema/${kos.id}`}
-              className={slogGumba({ className: 'flex-1' })}
-              aria-label={`Rezerviraj: ${kos.naziv} (${kos.inventarnaStevilka})`}
+          <>
+            {/* Rezerviraj doda kos in odpre obrazec: od kataloga do oddaje so trije kliki. */}
+            <Gumb
+              className="col-span-2"
+              aria-label={`Rezerviraj: ${oznaka}`}
+              onClick={() => {
+                dodaj(kos);
+                navigiraj('/rezervacija');
+              }}
             >
               Rezerviraj
-            </Link>
-          ))
+            </Gumb>
+            <Gumb
+              razlicica="sekundarni"
+              velikost="majhna"
+              ikona={izbran ? 'kljukica' : 'plus'}
+              aria-pressed={izbran}
+              aria-label={
+                izbran ? `Odstrani iz rezervacije: ${oznaka}` : `Dodaj k rezervaciji: ${oznaka}`
+              }
+              onClick={() => (izbran ? odstrani(kos.id) : dodaj(kos))}
+            >
+              {izbran ? 'Izbrano' : 'Dodaj'}
+            </Gumb>
+          </>
         )}
         <Link
           to={`/oprema/${kos.id}`}
-          className={slogGumba({ razlicica: 'sekundarni', className: 'flex-1' })}
-          aria-label={`Podrobnosti: ${kos.naziv} (${kos.inventarnaStevilka})`}
+          className={slogGumba({
+            razlicica: 'sekundarni',
+            velikost: 'majhna',
+            className: vOkvari ? 'col-span-2' : '',
+          })}
+          aria-label={`Podrobnosti: ${oznaka}`}
         >
           Podrobnosti
         </Link>
