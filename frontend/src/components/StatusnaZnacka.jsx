@@ -17,7 +17,8 @@ const TONI = {
   primarna: 'bg-brand-600 text-white',
 };
 
-function Znacka({ ton, ikona, children }) {
+// Splošna značka (npr. Aktiven/Deaktiviran): ton iz TONI, ikona iz Ikona.jsx.
+export function Znacka({ ton, ikona, children }) {
   return (
     <span
       className={`inline-flex items-center gap-1 rounded-osnovni border border-transparent px-2 py-0.5 text-sm font-medium whitespace-nowrap ${TONI[ton]}`}

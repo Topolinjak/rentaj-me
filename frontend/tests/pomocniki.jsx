@@ -13,7 +13,7 @@ export const UPORABNIKI = Object.fromEntries(
   ]),
 );
 
-const json = (status, telo) =>
+export const json = (status, telo) =>
   new Response(telo === undefined ? null : JSON.stringify(telo), {
     status,
     headers: { 'Content-Type': 'application/json' },
@@ -39,8 +39,41 @@ function laznaPrijava(telo) {
 }
 
 // Lažni fetch: /api/auth/jaz vrne uporabnika ali 401, prijava kot zgoraj, odjava 204.
-export function lazniBackend(uporabnik) {
-  const fetch = vi.fn(async (pot, { method = 'GET', body } = {}) => {
+// api: dodatne poti { 'GET /api/uporabniki': ({ telo, iskalni, parametri }) => [status, telo]
+// | Response }. Ključ je metoda in pot brez poizvedbe, lahko s parametri (/api/oprema/:id);
+// iskalni so parametri poizvedbe (URLSearchParams).
+function najdiPot(api, metoda, pot) {
+  for (const [kljuc, obdelava] of Object.entries(api)) {
+    const [m, vzorec] = kljuc.split(' ');
+    if (m !== metoda) continue;
+    const imena = [];
+    const regex = new RegExp(
+      `^${vzorec.replace(/:(\w+)/g, (_, ime) => (imena.push(ime), '([^/]+)'))}$`,
+    );
+    const ujemanje = regex.exec(pot);
+    if (ujemanje) {
+      return {
+        obdelava,
+        parametri: Object.fromEntries(imena.map((ime, i) => [ime, ujemanje[i + 1]])),
+      };
+    }
+  }
+  return null;
+}
+
+export function lazniBackend(uporabnik, api = {}) {
+  const fetch = vi.fn(async (url, { method = 'GET', body } = {}) => {
+    const [pot, poizvedba = ''] = url.split('?');
+    const najdena = najdiPot(api, method, pot);
+    if (najdena) {
+      const odgovor = await najdena.obdelava({
+        telo: body ? JSON.parse(body) : undefined,
+        iskalni: new URLSearchParams(poizvedba),
+        parametri: najdena.parametri,
+        pot,
+      });
+      return odgovor instanceof Response ? odgovor : json(...odgovor);
+    }
     if (pot === '/api/auth/jaz' && method === 'GET') {
       return uporabnik ? json(200, uporabnik) : json(401, { sporocilo: 'Prijava je obvezna.' });
     }
@@ -52,9 +85,9 @@ export function lazniBackend(uporabnik) {
   return fetch;
 }
 
-// izrisi('/tehnik', { vloga: 'TEHNIK' }) – brez vloge ni nihče prijavljen.
-export function izrisi(pot, { vloga } = {}) {
-  const fetch = lazniBackend(vloga && UPORABNIKI[vloga]);
+// izrisi('/tehnik', { vloga: 'TEHNIK', api }) – brez vloge ni nihče prijavljen.
+export function izrisi(pot, { vloga, api } = {}) {
+  const fetch = lazniBackend(vloga && UPORABNIKI[vloga], api);
   const router = createMemoryRouter(poti, { initialEntries: [pot] });
   render(
     <UporabnikProvider>
