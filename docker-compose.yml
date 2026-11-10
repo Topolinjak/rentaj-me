@@ -48,5 +48,22 @@ services:
       timeout: 5s
       retries: 5
 
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      # Proxy /api v vite.config.js posreduje zahteve storitvi backend (ADR-0012).
+      BACKEND_URL: http://backend:3000
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    volumes:
+      # Koda z gostitelja, da Vite zazna spremembe ...
+      - ./frontend:/app
+      # ... a node_modules ostane iz slike (zgrajen za Linux/Alpine, ne za gostitelja).
+      - /app/node_modules
+
 volumes:
   db-podatki:

@@ -97,7 +97,9 @@ rentaj-me/
 │   ├── src/
 │   │   ├── pages/         # strani (Katalog, MojeIzposoje, Tehnik ...)
 │   │   ├── components/    # komponente za večkratno uporabo
-│   │   └── api/           # funkcije za klice API-ja
+│   │   ├── api/           # funkcije za klice API-ja (klic.js)
+│   │   └── utils/         # pomožne funkcije (datumi.js)
+│   ├── tests/             # testi (Vitest)
 │   └── vite.config.js
 ├── backend/               # Express API
 │   ├── src/

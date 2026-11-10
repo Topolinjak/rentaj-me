@@ -3,3 +3,4 @@ backend/src/generated
 backend/prisma/migrations
 package-lock.json
 *.md
+dist
