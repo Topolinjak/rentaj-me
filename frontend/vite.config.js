@@ -22,6 +22,9 @@ export default defineConfig(({ mode }) => {
     },
     test: {
       include: ['tests/**/*.test.{js,jsx}'],
+      // Testi komponent tečejo v jsdom (simuliran brskalnik); setup.js po vsakem testu počisti DOM.
+      environment: 'jsdom',
+      setupFiles: ['tests/setup.js'],
     },
   };
 });

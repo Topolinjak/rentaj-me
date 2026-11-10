@@ -97,7 +97,8 @@ rentaj-me/
 │   ├── src/
 │   │   ├── pages/         # strani (Katalog, MojeIzposoje, Tehnik ...)
 │   │   ├── components/    # komponente za večkratno uporabo
-│   │   ├── api/           # funkcije za klice API-ja (klic.js)
+│   │   ├── api/           # funkcije za klice API-ja (klic.js, auth.js)
+│   │   ├── auth/          # kontekst prijavljenega uporabnika, vloge in meni
 │   │   ├── utils/         # pomožne funkcije (datumi.js)
 │   │   ├── assets/        # logotipi
 │   │   └── index.css      # Tailwind in oblikovni tokeni (docs/oblikovanje.md)

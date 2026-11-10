@@ -1,3 +1,4 @@
+// @vitest-environment node
 // Oblikovni tokeni iz src/index.css (dokument 07, 3.2 in 7): prisotnost tokenov in kontrast
 // besedila po WCAG 2.1 (AA: vsaj 4,5 : 1 za navadno besedilo).
 import { readFileSync } from 'node:fs';

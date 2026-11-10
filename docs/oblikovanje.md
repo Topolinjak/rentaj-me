@@ -66,6 +66,7 @@ Test `frontend/tests/tokeni.test.js` preveri, da tokeni obstajajo, in izračuna 
 | Naslov razdelka | `text-razdelek font-bold text-brand-600` | 24 px |
 | Besedilo | privzeto (`text-base text-gray-700`) | 16 px |
 | Pomožno besedilo | `text-sm text-gray-600` | 14 px |
+| Meni v glavi | `text-meni font-medium` | 15 px |
 | Številke v tabelah | `tabular-nums` | |
 | Gumbi, polja, kartice, značke | `rounded-osnovni` | 3 px |
 | Avatarji, ikone omrežij | `rounded-full` | 50 % |
@@ -73,6 +74,31 @@ Test `frontend/tests/tokeni.test.js` preveri, da tokeni obstajajo, in izračuna 
 | Širina vsebine | `mx-auto max-w-vsebina px-4` | 1200 px, ob robu 16 px |
 
 Enota razmikov ostane v `rem` (Tailwindova privzeta), ne v px. Če si uporabnik v brskalniku poveča pisavo, se sorazmerno povečajo tudi razmiki.
+
+Vsak interaktivni element ima vidno fokusno obrobo (`:focus-visible`, 2 px `brand-600`). Na modri podlagi (noga) jo element zamenja z belo (`focus-visible:outline-white`).
+
+## Postavitev (I-08)
+
+Strani prijavljenih uporabnikov so v skupni postavitvi (`components/Postavitev.jsx`): glava, vsebina (`<main>`) in noga. Stran za prijavo je zunaj nje, ker nima glave (dokument 07, 5.1); nogo vstavi sama.
+
+- **Glava** (`components/Glava.jsx`): bela, 80 px na namizju in 64 px na telefonu, spodaj obroba `gray-200`. Levo logotip in »Rentaj.me« z »Izposoja opreme«, desno meni vloge, ime in vloga ter *Odjava*. Aktivna povezava ima 2 px črto `brand-600` pod besedilom.
+- **Meni po vlogah** (`auth/vloge.js`):
+
+  | Vloga | Meni | Začetna stran (US-01) |
+  |---|---|---|
+  | Študent, asistent, profesor | Katalog, Moje izposoje | Katalog |
+  | Tehnik | Nadzorna plošča, Odobrene, Izdane, Zamujene, Inventar | Nadzorna plošča |
+  | Administrator | Uporabniki, Kategorije, Inventar | Uporabniki |
+
+- **Mobilni meni:** pod 1024 px (`lg`) se meni skrije za gumb »Meni«, ki odpre bel pladenj čez celo širino. Pladenj se zapre s ponovnim klikom, s tipko Esc ali ob izbiri povezave. Pri tehniku je v meniju pet povezav, ime in *Odjava*, kar na tablici ne gre v eno vrsto, zato je meja `lg` in ne `md`. Vrstice pladnja so visoke vsaj 44 px (dokument 07, 6).
+- **Noga** (`components/Noga.jsx`): `brand-600`, kontakt in naslov oddelka, Facebook, Instagram in YouTube oddelka v belih okroglih okvirjih (44 px, odprejo se v novem zavihku), spodaj svetlejša črta (`brand-400`) in »Rentaj.me · Oddelek za tehniko FNM {leto} – Vse pravice pridržane.« Ikone so poti iz paketa simple-icons (CC0), kopirane v `components/ikoneOmrezij.js`, da zaradi treh ikon ni nove odvisnosti.
+- **Preskoči na vsebino:** prva povezava na strani, vidna le ob fokusu s tipkovnico.
+
+### Zaščitene poti
+
+`components/ZascitenaPot.jsx` ovije skupino poti z vlogami, ki jih smejo videti. Neprijavljen uporabnik gre na prijavo (`state.od` hrani stran, na katero je hotel), uporabnik z drugo vlogo pa na začetno stran svoje vloge. Pot `/` prijavljenega pošlje na začetno stran vloge, ostale na prijavo. To je le usmerjanje v vmesniku, pravo zaščito izvaja backend (401, 403).
+
+Kdo je prijavljen, frontend izve ob zagonu z `GET /api/auth/jaz` (`auth/UporabnikProvider.jsx`), ker je žeton v piškotku `httpOnly`, ki ga JavaScript ne vidi (ADR-0008). Dokler odgovor ne pride, zaščitene poti ne preusmerjajo. *Odjava* pokliče `POST /api/auth/odjava`, izprazni kontekst in preusmeri na prijavo.
 
 ## Datumi in ure
 

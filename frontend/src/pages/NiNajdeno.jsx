@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 // Neznana pot (404).
 export default function NiNajdeno() {
   return (
-    <main className="mx-auto max-w-vsebina px-4 py-8">
+    <div className="mx-auto max-w-vsebina px-4 py-8">
       <h1 className="text-naslov font-bold text-gray-900">Stran ne obstaja</h1>
       <p className="mt-2">
         Strani, ki ste jo iskali, ni mogoče najti. Morda je bila povezava napačna.
@@ -14,6 +14,6 @@ export default function NiNajdeno() {
       >
         Na začetno stran
       </Link>
-    </main>
+    </div>
   );
 }
