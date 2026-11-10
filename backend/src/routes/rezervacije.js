@@ -10,6 +10,7 @@ import {
   oddajRezervacijo,
   odobriRezervacijo,
   opozorilaZaRezervacijo,
+  podrobnostiRezervacije,
   seznamRezervacij,
   stevciRezervacij,
   vrniRezervacijo,
@@ -121,6 +122,17 @@ rezervacijeRouter.get(
 rezervacijeRouter.get('/stevci', zahtevajVlogo(...OSEBJE), async (req, res) => {
   res.json(await stevciRezervacij());
 });
+
+// GET /api/rezervacije/:id – ena rezervacija z uporabnikom in kosi s stanji (stran vračila).
+// Za /moje in /stevci, sicer bi ju ujela ta pot.
+rezervacijeRouter.get(
+  '/:id',
+  zahtevajVlogo(...OSEBJE),
+  validiraj(idShema, 'params'),
+  async (req, res) => {
+    res.json(await podrobnostiRezervacije(req.params.id));
+  },
+);
 
 // GET /api/rezervacije/:id/opozorila – zamujene izposoje in neporavnane poškodbe uporabnika,
 // ki je oddal rezervacijo :id (US-11, klik na opozorilo).
