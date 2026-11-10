@@ -66,7 +66,10 @@ const IKONE = {
   predal: <path d="M3 13h5l1.5 3h5L16 13h5M5.5 5h13L21 13v6H3v-6L5.5 5z" />,
 };
 
-export default function Ikona({ ime, className = 'size-4' }) {
+// Brez razreda size-* ima ikona privzeto velikost 16 px; SVG brez velikosti bi se raztegnil
+// čez vso širino vsebnika.
+export default function Ikona({ ime, className = '' }) {
+  const velikost = /(^|\s)size-/.test(className) ? '' : 'size-4';
   return (
     <svg
       aria-hidden="true"
@@ -76,7 +79,7 @@ export default function Ikona({ ime, className = 'size-4' }) {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`shrink-0 ${className}`}
+      className={`shrink-0 ${velikost} ${className}`}
     >
       {IKONE[ime]}
     </svg>

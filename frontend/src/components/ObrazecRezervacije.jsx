@@ -29,7 +29,7 @@ function NamigVloge({ pravila, steviloIzbranih }) {
   return (
     <div className="flex gap-2 rounded-osnovni bg-brand-50 px-3 py-2 text-sm text-brand-700">
       <Ikona ime="info" className="mt-0.5" />
-      <p>
+      <p className="min-w-0 flex-1">
         Vaša vloga: največ {steviloKosovBesedilo(maxKosov)}, {steviloDniBesedilo(maxDni)}.
         {aktivnihKosov > 0 &&
           ` Trenutno imate ${steviloKosovBesedilo(aktivnihKosov)} v aktivnih rezervacijah, dodate lahko še ${prostih}.`}
