@@ -66,3 +66,24 @@ export function obdobje(od, zadnjiDan) {
   const istoLeto = od.slice(0, 4) === zadnjiDan.slice(0, 4);
   return `${istoLeto ? kratekDatum(od) : datumZLetom(od)} – ${datumZLetom(zadnjiDan)}`;
 }
+
+// Ure so v obliki »14.00« (s piko, kot je v slovenščini pravopisno; dokument 07, 3.4).
+const oblikaUre = new Intl.DateTimeFormat('en-GB', {
+  timeZone: CASOVNI_PAS,
+  hour: 'numeric',
+  minute: '2-digit',
+  hourCycle: 'h23',
+});
+
+// Ura trenutka v Ljubljani: »2026-10-22T12:00:00Z« → »14.00«. Sprejme Date ali niz ISO
+// (tako API vrača izdanoOb, vrnjenoOb ...).
+export function ura(trenutek) {
+  const deli = Object.fromEntries(
+    oblikaUre.formatToParts(new Date(trenutek)).map((d) => [d.type, d.value]),
+  );
+  return `${Number(deli.hour)}.${deli.minute}`;
+}
+
+// Datum in ura trenutka v Ljubljani: »22. 10. 2026 ob 14.00«.
+export const datumInUra = (trenutek) =>
+  `${datumZLetom(datumVLjubljani(new Date(trenutek)))} ob ${ura(trenutek)}`;

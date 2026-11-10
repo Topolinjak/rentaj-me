@@ -275,6 +275,8 @@ Za vsako večjo odločitev (npr. izbira pisave, shema barv) napiši kratko obraz
 
 Te odločitve sprejmi pred začetkom ali zahtevaj predlog z možnostmi:
 
+> Odgovori so zapisani v [oblikovanje.md](oblikovanje.md) (10. 11. 2026).
+
 1. Ali lahko od oddelka dobimo logotipa UM/FNM in Oddelka za tehniko v vektorski obliki (SVG) ali kot PNG s prozornim ozadjem? Na spletni strani je logotip oddelka JPG z belim ozadjem.
 2. Ali naj se uporabi jubilejni logotip »50 let UM« (kot na spletni strani) ali standardni logotip univerze?
 3. Ali je pisava spletne strani res Roboto? (Preveri v orodjih za razvijalce, glej 3.4.)
