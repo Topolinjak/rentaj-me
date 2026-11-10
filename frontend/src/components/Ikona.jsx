@@ -37,6 +37,13 @@ const IKONE = {
   plus: <path d="M12 5v14M5 12h14" />,
   minus: <path d="M5 12h14" />,
   nalaganje: <path d="M12 3a9 9 0 1 0 9 9" />,
+  puscicaGor: <path d="M12 19V5M6 11l6-6 6 6" />,
+  puscicaDol: <path d="M12 5v14M6 13l6 6 6-6" />,
+  razvrsti: <path d="M8 4v16M4 8l4-4 4 4M16 20V4M12 16l4 4 4-4" />,
+  levo: <path d="M15 6l-6 6 6 6" />,
+  desno: <path d="M9 6l6 6-6 6" />,
+  // Prazen predal: prazna stanja.
+  predal: <path d="M3 13h5l1.5 3h5L16 13h5M5.5 5h13L21 13v6H3v-6L5.5 5z" />,
 };
 
 export default function Ikona({ ime, className = 'size-4' }) {
