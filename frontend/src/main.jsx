@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import { poti } from './poti.jsx';
+import './index.css';
 
 const router = createBrowserRouter(poti);
 

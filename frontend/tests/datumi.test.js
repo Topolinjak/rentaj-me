@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   danes,
+  datumInUra,
   datumVLjubljani,
   datumZLetom,
   dodajDni,
@@ -8,6 +9,7 @@ import {
   kratekDatum,
   obdobje,
   steviloDni,
+  ura,
 } from '../src/utils/datumi.js';
 
 afterEach(() => vi.useRealTimers());
@@ -96,5 +98,32 @@ describe('prikaz (dokument 07: 22. 10. 2026, kratko 22. 10.)', () => {
     expect(obdobje('2026-10-20', '2026-10-24')).toBe('20. 10. – 24. 10. 2026');
     expect(obdobje('2026-12-28', '2027-01-03')).toBe('28. 12. 2026 – 3. 1. 2027');
     expect(obdobje('2026-10-20', '2026-10-20')).toBe('20. 10. 2026');
+  });
+});
+
+describe('ura (dokument 07: 14.00) v Ljubljani', () => {
+  it('poleti je Ljubljana UTC+2, pozimi UTC+1', () => {
+    expect(ura('2026-10-22T12:00:00Z')).toBe('14.00');
+    expect(ura('2026-11-12T12:05:00Z')).toBe('13.05');
+  });
+
+  it('ura brez vodilne ničle, minute vedno z dvema mestoma; polnoč je 0.00', () => {
+    expect(ura('2026-11-12T08:07:00Z')).toBe('9.07');
+    expect(ura('2026-11-11T23:00:00Z')).toBe('0.00');
+  });
+
+  it('dan konca poletnega časa (25. 10. 2026): 01.30 UTC je 02.30 po zimskem času', () => {
+    expect(ura('2026-10-25T00:30:00Z')).toBe('2.30');
+    expect(ura('2026-10-25T01:30:00Z')).toBe('2.30');
+  });
+
+  it('sprejme tudi Date', () => {
+    expect(ura(new Date('2026-03-29T01:00:00Z'))).toBe('3.00');
+  });
+
+  it('datum in ura: dan je ljubljanski, ne UTC', () => {
+    expect(datumInUra('2026-10-22T12:00:00Z')).toBe('22. 10. 2026 ob 14.00');
+    // 23.30 UTC 31. 12. je v Ljubljani že novo leto.
+    expect(datumInUra('2026-12-31T23:30:00Z')).toBe('1. 1. 2027 ob 0.30');
   });
 });

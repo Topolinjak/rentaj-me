@@ -36,7 +36,8 @@ describe('poti', () => {
     ['/tehnik/vracilo/3', 'Vračilo'],
     ['/admin/uporabniki', 'Uporabniki'],
   ])('%s prikaže stran »%s«', (pot, naslov) => {
-    expect(izrisi(pot)).toContain(`<h1>${naslov}</h1>`);
+    // Le besedilo naslova; razredi za oblikovanje niso del preverjanja.
+    expect(izrisi(pot)).toMatch(new RegExp(`<h1[^>]*>${naslov}</h1>`));
   });
 
   it('neznana pot prikaže stran 404', () => {
