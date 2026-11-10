@@ -118,7 +118,8 @@ export default function KosOpreme() {
     <Vsebina>
       <NazajNaKatalog />
       <div className="mt-4 grid gap-8 lg:grid-cols-2">
-        <div>
+        {/* min-w-0: element mreže se sme skrčiti pod širino vsebine (sicer stran drsi vodoravno). */}
+        <div className="min-w-0">
           <PlaceholderSlike kategorija={kos.kategorija} />
           <div className="mt-6 flex flex-wrap items-start justify-between gap-3">
             <div>
@@ -165,7 +166,7 @@ export default function KosOpreme() {
           )}
         </div>
 
-        <div className="space-y-8">
+        <div className="min-w-0 space-y-8">
           <ZasedenostKosa
             id={kos.id}
             izbrano={termin.od ? termin : undefined}

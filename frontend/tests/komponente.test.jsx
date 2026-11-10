@@ -276,3 +276,13 @@ describe('obvestila (toast)', () => {
     expect(() => render(<Sprozilec />)).toThrow(/ObvestilaProvider/);
   });
 });
+
+describe('Ikona', () => {
+  it('ima privzeto velikost, tudi kadar je podan drug razred', async () => {
+    const { default: Ikona } = await import('../src/components/Ikona.jsx');
+    const { container, rerender } = render(<Ikona ime="info" className="mt-0.5" />);
+    expect(container.querySelector('svg').getAttribute('class')).toContain('size-4');
+    rerender(<Ikona ime="info" className="size-6" />);
+    expect(container.querySelector('svg').getAttribute('class')).not.toContain('size-4');
+  });
+});

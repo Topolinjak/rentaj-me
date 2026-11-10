@@ -154,3 +154,26 @@ Funkcije so v `frontend/src/utils/datumi.js` in sledijo [ADR-0013](adr/0013-term
 | `datumInUra('2026-10-22T12:00:00Z')` | `22. 10. 2026 ob 14.00` |
 
 Ure so dosledno zapisane s piko (`14.00`), kot je v slovenščini pravopisno, ura je brez vodilne ničle (`9.07`). Vse se računa v pasu Europe/Ljubljana, ne v pasu brskalnika.
+
+## Kontrola dostopnosti in mobilne različice (I-37)
+
+Pregled 10. 11. 2026 v Firefoxu (brez glave, prek WebDriver) z razvojnimi podatki: 14 strani MVP (prijava, katalog, kos, rezervacija, moje izposoje, 404, nadzorna plošča, odobrene, izdano, zamujene, vračilo, inventar, uporabniki, kategorije), vsaka pri 375 px in 1280 px.
+
+| Kriterij (dokument 07, 6, 7, 11) | Kako je preverjeno | Rezultat |
+|---|---|---|
+| Brez vodoravnega drsenja pri 375 px | Najbolj desni rob vseh elementov in besedil v primerjavi s širino strani | Brez drsenja na vseh straneh (po popravku spodaj) |
+| WCAG 2.1 A in AA, dobre prakse | axe-core 4.14 na vsaki strani in širini (`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `best-practice`) | 0 kršitev, vključno s kontrastom v značkah |
+| Kontrast tokenov | `tests/tokeni.test.js` (WCAG, vsaj 4,5 : 1) | Vsi pari ustrezajo |
+| Tipkovnica | Testi komponent: zavihki (puščice, Home, End), koledar (puščice čez rob meseca, PageUp/PageDown, Enter), pogovorna okna na `<dialog>` (Esc, ujet fokus), mobilni meni (Esc), povezava »Preskoči na vsebino«, vidna fokusna obroba | Ustreza |
+| Prazno stanje, nalaganje, napaka | Vsaka stran ima skelet, prazno stanje in napako s ponovnim poskusom; testi za 400 (pri poljih), 401 (potekla seja → prijava), 403 (vloga → začetna stran), 404 in 409 | Ustreza |
+| Šumniki, datumi, čas | `22. 10. 2026`, `22. 10.`, `14.00`, vse v pasu Europe/Ljubljana (`utils/datumi.js`, testi s prehodi na poletni in zimski čas) | Ustreza |
+| Tarče za dotik | Gumbi normalne velikosti, vrstice menija, dnevi koledarja in povezave družbenih omrežij vsaj 44 px (dnevi 40 px, kot zahteva dokument 07) | Ustreza |
+
+Najdeno in popravljeno:
+
+- **Stran kosa je pri obeh širinah drsela vodoravno** (58 px na telefonu). Ikona v namigu omejitev vloge je dobila razred brez velikosti, SVG se je raztegnil čez vso širino in odstavek potisnil iz okvirja. `Ikona` zdaj privzeto velikost doda vedno, kadar razred `size-*` ni podan; stolpca strani kosa imata `min-w-0`, da ju vsebina ne razširi.
+
+Opombi:
+
+- Firefox brez glave okna ne zoži pod približno 490 px. Za 375 px je bila širina strani omejena s CSS; prelomi postavitve so pri 640 px, zato je postavitev enaka kot na telefonu.
+- Ročnega preizkusa z bralnikom zaslona (NVDA, VoiceOver) pregled ni vključeval; vloge, oznake in `aria-live` preverjajo testi in axe.
