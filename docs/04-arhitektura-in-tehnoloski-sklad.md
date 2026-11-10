@@ -99,6 +99,7 @@ rentaj-me/
 │   │   ├── components/    # komponente za večkratno uporabo
 │   │   ├── api/           # funkcije za klice API-ja (klic.js, auth.js)
 │   │   ├── auth/          # kontekst prijavljenega uporabnika, vloge in meni
+│   │   ├── obvestila/     # obvestila (toast)
 │   │   ├── utils/         # pomožne funkcije (datumi.js)
 │   │   ├── assets/        # logotipi
 │   │   └── index.css      # Tailwind in oblikovni tokeni (docs/oblikovanje.md)

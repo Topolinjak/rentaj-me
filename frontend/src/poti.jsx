@@ -57,6 +57,18 @@ export const poti = [
           { path: '/admin/kategorije', element: <AdminKategorije /> },
         ],
       },
+      // Pregled komponent le med razvojem. Uvoz je dinamičen, zato ga build (DEV = false)
+      // skupaj s stranjo izpusti.
+      ...(import.meta.env.DEV
+        ? [
+            {
+              path: '/razvoj/komponente',
+              lazy: async () => ({
+                Component: (await import('./pages/RazvojKomponente.jsx')).default,
+              }),
+            },
+          ]
+        : []),
       // 404 je v postavitvi, a brez zaščite: prijavljen uporabnik vidi meni, ostali le glavo.
       { path: '*', element: <NiNajdeno /> },
     ],

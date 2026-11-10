@@ -100,6 +100,28 @@ Strani prijavljenih uporabnikov so v skupni postavitvi (`components/Postavitev.j
 
 Kdo je prijavljen, frontend izve ob zagonu z `GET /api/auth/jaz` (`auth/UporabnikProvider.jsx`), ker je žeton v piškotku `httpOnly`, ki ga JavaScript ne vidi (ADR-0008). Dokler odgovor ne pride, zaščitene poti ne preusmerjajo. *Odjava* pokliče `POST /api/auth/odjava`, izprazni kontekst in preusmeri na prijavo.
 
+## Osnovne komponente (I-11)
+
+Pregled vseh komponent v vseh stanjih je med razvojem na `/razvoj/komponente` (`npm run dev`). V buildu te strani ni.
+
+| Komponenta | Datoteka | Uporaba |
+|---|---|---|
+| Gumb | `components/Gumb.jsx` | `razlicica`: `primarni`, `sekundarni`, `nevarni`; `velikost`: `normalna` (44 px), `majhna`; `ikona`; `nalaganje` (onemogočen, `aria-busy`, vrtavka, besedilo ostane); `disabled`. Privzeto `type="button"`. Gumb samo z ikono potrebuje `aria-label`. |
+| Polje obrazca | `components/Polje.jsx` | `oznaka`, `pomoc`, `napaka`, `obvezno`; `kot`: `input`, `textarea`, `select`. Oznaka je povezana s poljem, pomoč in napaka prek `aria-describedby`, napaka ima `role="alert"` in nastavi `aria-invalid`. |
+| Statusne značke | `components/StatusnaZnacka.jsx` | `ZnackaRezervacije` (`status`, `zamujena`, `dniZamude`), `ZnackaOpreme`, `ZnackaStanja`. Besedilo in ikona, barve iz 3.3. |
+| Pogovorno okno | `components/PogovornoOkno.jsx` | `odprto`, `onZapri`, `naslov`, `dejanja`. `PotrditvenoOkno` za potrditve: `potrdi` (glagol), `nevarno`, `nalaganje`, `napaka`. |
+| Obvestila | `obvestila/` | `const obvesti = useObvestila(); obvesti('…', { vrsta: 'uspeh' \| 'info' \| 'napaka' })`. Ostanejo 5 s, zapreti jih je mogoče z gumbom. |
+| Ikone | `components/Ikona.jsx` | Ročno narisane črtne ikone (ura, kljukica, križec, budilka, opozorilo ...), skrite bralniku zaslona. |
+
+Odločitve:
+
+- **Obvezna polja brez atributa `required`.** Polje dobi `aria-required`, ne pa `required`. Vgrajeno preverjanje brskalnika bi pokazalo svoje oblačke v jeziku brskalnika in ustavilo oddajo, napake pa naj prihajajo iz API-ja pri polju (dokument 07, 2 in 4).
+- **Pogovorno okno na elementu `<dialog>`.** `showModal()` brskalniku prepusti ujemanje fokusa, neaktivnost ostale strani, zapiranje z Esc in vračanje fokusa na gumb, ki je okno odprl. Lastna izvedba tega bi bila daljša in manj zanesljiva. Na telefonu je okno pripeto na dno (bottom sheet), od 640 px na sredini. Potrditveno okno se ne zapre ob kliku na ozadje, da se dejanje ne prekine po nesreči.
+- **Onemogočeno stanje** je za vse različice gumbov enako: `gray-100`, obroba `gray-300`, besedilo `gray-600` (kontrast 5,3 : 1). Dokument 07 zahteva berljivost tudi v onemogočenih stanjih.
+- **Nevarni gumb** ob lebdenju potemni v nov token `napaka-temna` (`#912018`).
+- **Število dni** v znački »Zamujena · N dni« ima pravilno slovensko obliko: 1 dan, 2 dneva, 3 in 4 dnevi, 5 dni (`utils/oznake.js`).
+- **Obvestila** so v območju z `aria-live="polite"`, ki je v DOM ves čas, sicer bralnik zaslona novega obvestila ne bi zaznal. Napake obrazcev niso obvestila, ampak so prikazane pri obrazcu.
+
 ## Datumi in ure
 
 Funkcije so v `frontend/src/utils/datumi.js` in sledijo [ADR-0013](adr/0013-termini-kot-celi-dnevi.md):
