@@ -32,3 +32,13 @@ export const zavrniRezervacijo = (id, { razlogZavrnitve, komentarTehnika }) =>
     metoda: 'PATCH',
     telo: { razlogZavrnitve, komentarTehnika },
   });
+
+export const rezervacija = (id, { signal } = {}) => klic(`/api/rezervacije/${id}`, { signal });
+
+// kosi: [{ id, stanje }] – stanje vsakega kosa ob izdaji (US-07).
+export const izdajRezervacijo = (id, kosi) =>
+  klic(`/api/rezervacije/${id}/izdaja`, { metoda: 'PATCH', telo: { kosi } });
+
+// kosi: [{ id, stanje, opisPoskodbe? }] – stanje ob vračilu, pri poškodbi opis (US-08).
+export const vrniRezervacijo = (id, kosi) =>
+  klic(`/api/rezervacije/${id}/vracilo`, { metoda: 'PATCH', telo: { kosi } });

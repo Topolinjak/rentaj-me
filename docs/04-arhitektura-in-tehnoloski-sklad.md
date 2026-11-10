@@ -60,6 +60,7 @@ flowchart LR
 | `PATCH /api/rezervacije/:id/preklic` | Preklic oddane rezervacije | lastnik rezervacije |
 | `GET /api/rezervacije?status=&zamujene=` | Vse rezervacije s filtri (npr. `status=ODDANA`, `zamujene=true`); vsaka vsebuje `zamujena`, `dniZamude` in opozorili `steviloZamud`, `steviloNeporavnanihPoskodb` za svojega uporabnika | tehnik, admin |
 | `GET /api/rezervacije/stevci` | Števci za nadzorno ploščo `{ oddane, izdane, zamujene }` | tehnik, admin |
+| `GET /api/rezervacije/:id` | Ena rezervacija z uporabnikom, kosi (s trenutnim stanjem in stanji ob izdaji in vračilu) in zamudo | tehnik, admin |
 | `GET /api/rezervacije/:id/opozorila` | Zamujene izposoje in neporavnane poškodbe uporabnika te rezervacije `{ uporabnik, zamujene, poskodbe }` (klik na opozorilo) | tehnik, admin |
 | `PATCH /api/rezervacije/:id/odobritev` | Odobritev | tehnik |
 | `PATCH /api/rezervacije/:id/zavrnitev` | Zavrnitev z razlogom | tehnik |

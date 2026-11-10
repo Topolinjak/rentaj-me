@@ -11,19 +11,32 @@ import { dniZamude, jeZamujena, pogojZamujena } from './zamude.js';
 
 export const oznakaKosa = (kos) => `${kos.naziv} (${kos.inventarnaStevilka})`;
 
+// Kosi rezervacije s stanji: trenutnoStanje je privzeta izbira ob izdaji (US-07),
+// stanjeObIzdaji se ob vračilu prikaže za primerjavo (US-08).
 const vkljuciKose = {
   postavke: {
-    select: { kosOpreme: { select: { id: true, naziv: true, inventarnaStevilka: true } } },
+    select: {
+      stanjeObIzdaji: true,
+      stanjeObVracilu: true,
+      kosOpreme: {
+        select: { id: true, naziv: true, inventarnaStevilka: true, trenutnoStanje: true },
+      },
+    },
     orderBy: { kosOpremeId: 'asc' },
   },
 };
 
-// Rezervacija za odgovor API-ja: datuma od/do namesto zacetek/konec (ADR-0013), kosi namesto postavk.
+// Rezervacija za odgovor API-ja: datuma od/do namesto zacetek/konec (ADR-0013), kosi namesto
+// postavk (podatki kosa in stanji ob izdaji in vračilu).
 export function predstaviRezervacijo({ zacetek, konec, postavke, ...rezervacija }) {
   return {
     ...rezervacija,
     ...datumiIzTermina({ zacetek, konec }),
-    kosi: postavke.map((p) => p.kosOpreme),
+    kosi: postavke.map(({ kosOpreme, stanjeObIzdaji, stanjeObVracilu }) => ({
+      ...kosOpreme,
+      stanjeObIzdaji,
+      stanjeObVracilu,
+    })),
   };
 }
 
@@ -137,6 +150,23 @@ export async function seznamRezervacij({ status, zamujene }, zdaj = new Date()) 
     dniZamude: dniZamude(r, zdaj),
     ...opozorila.get(r.uporabnikId),
   }));
+}
+
+// Ena rezervacija za tehnika (stran vračila, US-08): enaka oblika kot na seznamu, z
+// uporabnikom, kosi s stanji in izračunano zamudo.
+export async function podrobnostiRezervacije(id, zdaj = new Date()) {
+  const r = await prisma.rezervacija.findUnique({
+    where: { id },
+    include: { ...vkljuciKose, ...vkljuciUporabnika },
+  });
+  if (!r) {
+    throw new ApiError(404, 'Rezervacija ne obstaja.');
+  }
+  return {
+    ...predstaviRezervacijo(r),
+    zamujena: jeZamujena(r, zdaj),
+    dniZamude: dniZamude(r, zdaj),
+  };
 }
 
 // Lastne rezervacije uporabnika (US-10), od najkasnejšega začetka naprej. Frontend jih razdeli
