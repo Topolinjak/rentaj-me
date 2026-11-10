@@ -51,6 +51,8 @@ Potrebuješ [Docker](https://docs.docker.com/get-docker/) z Docker Compose.
    curl http://localhost:3000/api/zdravje
    ```
 
+   Frontend je na <http://localhost:5173>. Razvojni strežnik Vite zahteve na `/api` posreduje backendu (proxy, ADR-0012), zato `curl http://localhost:5173/api/zdravje` vrne isto. Spremembe kode v `frontend/` se v brskalniku prikažejo takoj. Če so vrata `5173` zasedena, nastavi `FRONTEND_PORT`.
+
 4. Naloži začetne podatke (testni uporabniki, pravila izposoje, kategorije in oprema). Skripta je idempotentna, zato jo lahko poženeš večkrat:
 
    ```bash
@@ -83,6 +85,16 @@ npm run db:seed
 npm run dev
 ```
 
+Frontend na gostitelju (proxy prebere `BACKEND_PORT` iz korenskega `.env`):
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Po dodajanju paketa v Compose ponovno zgradi sliko: `docker compose up -d --build -V frontend` (oziroma `backend`).
+
 ## Testi in kakovost kode
 
 Testi tečejo na ločeni bazi `rentaj_test` na istem strežniku PostgreSQL (baza naj teče v Compose). Testi jo ustvarijo sami, uveljavijo migracije in jo pred vsakim testom izpraznijo; razvojne baze se ne dotaknejo.
@@ -95,7 +107,9 @@ npm run lint          # ESLint
 npm run format        # Prettier popravi oblikovanje
 ```
 
-Ob vsakem pull requestu na `main` GitHub Actions poženejo lint, preverjanje oblikovanja in teste.
+Frontend ima enake ukaze (`npm test`, `npm run lint`, `npm run format`) v mapi `frontend/`; testi ne potrebujejo baze.
+
+Ob vsakem pull requestu na `main` GitHub Actions poženejo lint, preverjanje oblikovanja in teste za backend in frontend ter build frontenda.
 
 ## Dokumentacija
 
