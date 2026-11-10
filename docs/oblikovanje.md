@@ -141,6 +141,16 @@ Odločitve:
 - **Skeleti** utripajo le, če uporabnik v sistemu ni izklopil animacij (`motion-safe`).
 - **Obvestila** so v območju z `aria-live="polite"`, ki je v DOM ves čas, sicer bralnik zaslona novega obvestila ne bi zaznal. Napake obrazcev niso obvestila, ampak so prikazane pri obrazcu.
 
+## Odločitve pri straneh (I-14 … I-36)
+
+- **Nalaganje, napake in obrazci so povsod enaki.** `hooks/usePodatki.js` vodi nalaganje (skelet), napako (z gumbom *Poskusi znova*, pri `404` brez njega) in osvežitev; `hooks/useObrazec.js` napake `400` prikaže pri poljih, `409` pri izbranem polju (npr. podvojen e-poštni naslov) ali nad gumbom. Seja, ki med delom poteče (`401`), uporabnika pošlje na prijavo in si zapomni stran.
+- **Rezervacija v treh klikih.** *Rezerviraj* na kartici v katalogu kos doda in odpre obrazec; *Dodaj* le doda kos za rezervacijo več kosov hkrati. Izbrani kosi so v `sessionStorage` (ostanejo ob osvežitvi, izbrišejo se po oddaji in odjavi). Na strani kosa termin izberete tudi s klikom na dva dneva v koledarju.
+- **Omejitve vloge so namig, ne pravilo.** Obrazec prikaže trajanje in opozori, če je daljše od dovoljenega, oddaje pa ne prepreči – odloči API (dokument 07, 9).
+- **Odobritev v enem kliku, zavrnitev s potrditvijo.** Ob opozorilu o zamudi ali poškodbi je v oknu za zavrnitev že izbran ustrezen razlog. Če je rezervacijo medtem obdelal drug tehnik (`409`), se seznam osveži.
+- **Izdaja privzame trenutno stanje kosa, vračilo ne.** Ob izdaji je stanje vsakega kosa že izbrano (zadnje znano stanje), ob vračilu ga mora tehnik izbrati sam, da poškodba ne ostane neopažena; *Ob izdaji* je prikazano za primerjavo.
+- **Odobrene rezervacije imajo svoj seznam.** Brez njega tehnik do gumba *Izdaj* ne bi prišel; razvrščene so po začetku termina.
+- **Tabele na telefonu so kartice**, dejanja v njih imajo velike tarče; seznami, kjer je več besedila (oddane, odobrene, moje izposoje), so kartice tudi na namizju.
+
 ## Datumi in ure
 
 Funkcije so v `frontend/src/utils/datumi.js` in sledijo [ADR-0013](adr/0013-termini-kot-celi-dnevi.md):

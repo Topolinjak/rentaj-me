@@ -26,9 +26,16 @@ Spletni sistem za izposojo opreme na oddelku za tehniko.
 
 ## Lokalni zagon
 
-Potrebuješ [Docker](https://docs.docker.com/get-docker/) z Docker Compose.
+Potrebuješ [Git](https://git-scm.com/) in [Docker](https://docs.docker.com/get-docker/) z Docker Compose. Node.js na računalniku ni potreben.
 
-1. Kopiraj predlogo nastavitev in jo po potrebi prilagodi:
+1. Prenesi repozitorij:
+
+   ```bash
+   git clone https://github.com/Topolinjak/rentaj-me.git
+   cd rentaj-me
+   ```
+
+2. Kopiraj predlogo nastavitev in jo po potrebi prilagodi:
 
    ```bash
    cp .env.example .env
@@ -36,7 +43,7 @@ Potrebuješ [Docker](https://docs.docker.com/get-docker/) z Docker Compose.
 
    Če so vrata `5432` na tvojem računalniku že zasedena, v `.env` nastavi drug `DB_PORT` (npr. `5433`) in ista vrata uporabi v `DATABASE_URL`. Če so zasedena vrata `3000`, nastavi `BACKEND_PORT` (npr. `3001`).
 
-2. Zaženi sistem:
+3. Zaženi sistem (prvi zagon zgradi slike in traja nekaj minut):
 
    ```bash
    docker compose up -d
@@ -44,20 +51,24 @@ Potrebuješ [Docker](https://docs.docker.com/get-docker/) z Docker Compose.
 
    Ob zagonu backend uveljavi migracije (`prisma migrate deploy`) in generira Prisma odjemalca. Spremembe kode v `backend/` ga samodejno ponovno zaženejo.
 
-3. Preveri, ali sta baza in backend pripravljena (stanje `healthy`):
+4. Preveri, ali sta baza in backend pripravljena (stanje `healthy`):
 
    ```bash
    docker compose ps
-   curl http://localhost:3000/api/zdravje
+   curl http://localhost:3000/api/zdravje   # vrata BACKEND_PORT iz .env
    ```
 
    Frontend je na <http://localhost:5173>. Razvojni strežnik Vite zahteve na `/api` posreduje backendu (proxy, ADR-0012), zato `curl http://localhost:5173/api/zdravje` vrne isto. Spremembe kode v `frontend/` se v brskalniku prikažejo takoj. Če so vrata `5173` zasedena, nastavi `FRONTEND_PORT`.
 
-4. Naloži začetne podatke (testni uporabniki, pravila izposoje, kategorije in oprema). Skripta je idempotentna, zato jo lahko poženeš večkrat:
+5. Naloži začetne podatke (testni uporabniki, pravila izposoje, kategorije in oprema). Skripta je idempotentna, zato jo lahko poženeš večkrat:
 
    ```bash
    docker compose exec backend npm run db:seed
    ```
+
+6. Odpri <http://localhost:5173> in se prijavi z enim od [testnih računov](#testni-računi), npr. `student@rentaj.test` / `student123`. Študent, asistent in profesor pridejo na *Katalog*, tehnik na *Nadzorno ploščo*, administrator na *Uporabnike*.
+
+Po `git pull` z novimi paketi ponovno zgradi slike: `docker compose up -d --build -V`. Če backend po posodobitvi ne pozna nove poti (odgovor »Pot ne obstaja.«), ga ponovno zaženi z `docker compose restart backend` – samodejni ponovni zagon ob spremembah lahko ob hkratni zamenjavi več datotek zgreši zadnjo.
 
 Sistem ustavi z `docker compose down`. Podatki baze ostanejo v volumnu `db-podatki`; izbrišeš jih z `docker compose down -v`.
 
@@ -119,6 +130,6 @@ Ob vsakem pull requestu na `main` GitHub Actions poženejo lint, preverjanje obl
 4. [Arhitektura in tehnološki sklad](docs/04-arhitektura-in-tehnoloski-sklad.md)
 5. [Uporabniške zgodbe](docs/05-uporabniske-zgodbe.md)
 6. [Wireframes](docs/06-wireframes.md)
-7. [Oblikovanje](docs/07-oblikovanje.md)
+7. [Oblikovanje](docs/07-oblikovanje.md) in [odločitve o oblikovanju](docs/oblikovanje.md) (tokeni, komponente, dostopnost)
 
 Arhitekturne odločitve so zapisane v [docs/adr/](docs/adr/).
