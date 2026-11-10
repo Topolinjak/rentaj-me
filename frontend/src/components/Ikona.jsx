@@ -42,6 +42,26 @@ const IKONE = {
   razvrsti: <path d="M8 4v16M4 8l4-4 4 4M16 20V4M12 16l4 4 4-4" />,
   levo: <path d="M15 6l-6 6 6 6" />,
   desno: <path d="M9 6l6 6-6 6" />,
+  // Ikone kategorij (placeholder namesto slike opreme v katalogu).
+  cip: (
+    <>
+      <rect x="6" y="6" width="12" height="12" rx="1" />
+      <path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4M10 10h4v4h-4z" />
+    </>
+  ),
+  merilnik: (
+    <>
+      <rect x="5" y="2" width="14" height="20" rx="2" />
+      <path d="M8 6h8v5H8zM12 14v4M8 16h.01M16 16h.01" />
+    </>
+  ),
+  kamera: (
+    <>
+      <path d="M3 8a1 1 0 0 1 1-1h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
+      <circle cx="12" cy="13" r="4" />
+    </>
+  ),
+  racunalnik: <path d="M4 5h16v11H4zM2 19h20" />,
   // Prazen predal: prazna stanja.
   predal: <path d="M3 13h5l1.5 3h5L16 13h5M5.5 5h13L21 13v6H3v-6L5.5 5z" />,
 };
