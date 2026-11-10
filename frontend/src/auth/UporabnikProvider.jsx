@@ -3,6 +3,7 @@
 // je to edini način, da frontend izve za obstoječo sejo.
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { jaz, odjava } from '../api/auth.js';
+import { DOGODEK_SEJA_POTEKLA } from '../api/klic.js';
 import { UporabnikKontekst } from './kontekst.js';
 
 export default function UporabnikProvider({ children }) {
@@ -22,6 +23,14 @@ export default function UporabnikProvider({ children }) {
         if (!preklic.signal.aborted) setNalaganje(false);
       });
     return () => preklic.abort();
+  }, []);
+
+  // Seja je potekla sredi dela (401 pri katerem koli klicu): izpraznimo kontekst, zaščitena
+  // pot nato pošlje uporabnika na prijavo in si zapomni stran, na kateri je bil.
+  useEffect(() => {
+    const obPotekli = () => setUporabnik(null);
+    window.addEventListener(DOGODEK_SEJA_POTEKLA, obPotekli);
+    return () => window.removeEventListener(DOGODEK_SEJA_POTEKLA, obPotekli);
   }, []);
 
   // Po uspešni prijavi (I-10) stran za prijavo sem zapiše podatke iz odgovora.

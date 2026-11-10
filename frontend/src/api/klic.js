@@ -3,6 +3,9 @@
 
 export const SPLOSNA_NAPAKA = 'Prišlo je do napake. Poskusite znova.';
 
+// Dogodek ob 401 sredi dela (posluša ga UporabnikProvider).
+export const DOGODEK_SEJA_POTEKLA = 'rentaj:seja-potekla';
+
 // Napaka, ki jo vrže klic(). message je besedilo za uporabnika; status je HTTP status
 // (0, če strežnik ni dosegljiv); napake so napake po poljih iz validacije ([{ polje, sporocilo }]).
 export class NapakaApi extends Error {
@@ -44,8 +47,17 @@ export async function klic(pot, { metoda = 'GET', telo, signal } = {}) {
   }
 
   const podatki = await preberiJson(odgovor);
+  // Seja je potekla med delom: kontekst uporabnika se izprazni in zaščitena pot pošlje na
+  // prijavo. Prijava in /jaz 401 obravnavata sama.
+  if (odgovor.status === 401 && !pot.startsWith('/api/auth/')) {
+    window.dispatchEvent(new Event(DOGODEK_SEJA_POTEKLA));
+  }
   if (!odgovor.ok) {
     throw new NapakaApi(podatki?.sporocilo || SPLOSNA_NAPAKA, odgovor.status, podatki?.napake);
   }
   return podatki;
 }
+
+// Napake po poljih iz odgovora 400 ([{ polje, sporocilo }]) → { polje: sporocilo }.
+export const napakePoPoljih = (napaka) =>
+  Object.fromEntries((napaka?.napake ?? []).map(({ polje, sporocilo }) => [polje, sporocilo]));

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router';
 import { prijava } from '../api/auth.js';
+import { napakePoPoljih } from '../api/klic.js';
 import logo from '../assets/logo-um-fnm-odt.jpg';
 import stavba from '../assets/stavba-fnm.jpg';
 import { useUporabnik } from '../auth/useUporabnik.js';
@@ -10,10 +11,6 @@ import { zacetnaStran } from '../auth/vloge.js';
 import Gumb from '../components/Gumb.jsx';
 import Noga from '../components/Noga.jsx';
 import Polje from '../components/Polje.jsx';
-
-// Napake po poljih iz odgovora 400 ([{ polje, sporocilo }]) → { email: '...', geslo: '...' }.
-const napakePoPoljih = (napake = []) =>
-  Object.fromEntries(napake.map(({ polje, sporocilo }) => [polje, sporocilo]));
 
 export default function Prijava() {
   const { uporabnik, nalaganje, prijavljen } = useUporabnik();
@@ -45,7 +42,7 @@ export default function Prijava() {
       navigiraj(lokacija.state?.od ?? zacetnaStran(podatki.vloga), { replace: true });
     } catch (e) {
       // 400: napake pri poljih; 401, 403 in ostalo: sporočilo API-ja nad gumbom.
-      if (e.napake?.length) setNapakePolj(napakePoPoljih(e.napake));
+      if (e.napake?.length) setNapakePolj(napakePoPoljih(e));
       else setNapaka(e.message);
       setPosiljanje(false);
     }
