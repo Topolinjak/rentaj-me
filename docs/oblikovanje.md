@@ -109,7 +109,7 @@ Kdo je prijavljen, frontend izve ob zagonu z `GET /api/auth/jaz` (`auth/Uporabni
 - Prijavljen uporabnik, ki odpre `/prijava`, gre na začetno stran vloge.
 - Polji imata `autoComplete` (`username`, `current-password`), da ju upravitelj gesel izpolni.
 
-## Osnovne komponente (I-11)
+## Osnovne komponente (I-11, I-12)
 
 Pregled vseh komponent v vseh stanjih je med razvojem na `/razvoj/komponente` (`npm run dev`). V buildu te strani ni.
 
@@ -120,6 +120,13 @@ Pregled vseh komponent v vseh stanjih je med razvojem na `/razvoj/komponente` (`
 | Statusne značke | `components/StatusnaZnacka.jsx` | `ZnackaRezervacije` (`status`, `zamujena`, `dniZamude`), `ZnackaOpreme`, `ZnackaStanja`. Besedilo in ikona, barve iz 3.3. |
 | Pogovorno okno | `components/PogovornoOkno.jsx` | `odprto`, `onZapri`, `naslov`, `dejanja`. `PotrditvenoOkno` za potrditve: `potrdi` (glagol), `nevarno`, `nalaganje`, `napaka`. |
 | Obvestila | `obvestila/` | `const obvesti = useObvestila(); obvesti('…', { vrsta: 'uspeh' \| 'info' \| 'napaka' })`. Ostanejo 5 s, zapreti jih je mogoče z gumbom. |
+| Gumb kot povezava | `components/slogGumba.js` | `<Link className={slogGumba({ razlicica: 'sekundarni' })}>` – povezava, ki je videti kot gumb (npr. »Na katalog«). |
+| Tabela | `components/Tabela.jsx` | `stolpci` (`kljuc`, `oznaka`, `vrednost`, po želji `razvrsti` in `stevilka`), `vrstice`, `zacetnoRazvrscanje`, `naslov`. Klik na glavo razvrsti naraščajoče, nato padajoče (`aria-sort`). Pod 640 px seznam kartic »oznaka: vrednost« z izbiro razvrščanja. |
+| Zavihki | `components/Zavihki.jsx` | `zavihki` (`kljuc`, `oznaka`, `vsebina`), po želji `izbran` in `onIzberi`. Puščice, Home in End po vzorcu WAI-ARIA. |
+| Paginacija | `components/Paginacija.jsx` | `stran` (od 1), `skupaj`, `onStran`; 20 na stran, »1–20 od 143«. |
+| Prazno stanje | `components/PraznoStanje.jsx` | `naslov`, `besedilo`, `dejanje`, `ikona`. |
+| Skeleti | `components/Skelet.jsx` | `SkeletKartic`, `SkeletTabele`; bralnik zaslona prebere »Nalaganje …«. |
+| Harmonika | `components/Harmonika.jsx` | `naslov`, `odprta` (začetno stanje), vsebina. |
 | Ikone | `components/Ikona.jsx` | Ročno narisane črtne ikone (ura, kljukica, križec, budilka, opozorilo ...), skrite bralniku zaslona. |
 
 Odločitve:
@@ -129,6 +136,9 @@ Odločitve:
 - **Onemogočeno stanje** je za vse različice gumbov enako: `gray-100`, obroba `gray-300`, besedilo `gray-600` (kontrast 5,3 : 1). Dokument 07 zahteva berljivost tudi v onemogočenih stanjih.
 - **Nevarni gumb** ob lebdenju potemni v nov token `napaka-temna` (`#912018`).
 - **Število dni** v znački »Zamujena · N dni« ima pravilno slovensko obliko: 1 dan, 2 dneva, 3 in 4 dnevi, 5 dni (`utils/oznake.js`).
+- **Tabela razvršča na odjemalcu.** Seznami v MVP (oddane, izdane, zamujene, moje izposoje) so kratki in jih API vrne v celoti. Besedilo se razvršča po slovenski abecedi (`Intl.Collator('sl')`: c, č, ... ž), prazne vrednosti so vedno na koncu. Na telefonu sta tabela in kartice obe v DOM, prikazana pa le ena (`hidden`/`sm:hidden`), zato ju bralnik zaslona ne prebere dvakrat.
+- **Harmonika na `<details>`/`<summary>`.** Brskalnik sam poskrbi za tipkovnico in stanje razširjeno/strnjeno za bralnik zaslona.
+- **Skeleti** utripajo le, če uporabnik v sistemu ni izklopil animacij (`motion-safe`).
 - **Obvestila** so v območju z `aria-live="polite"`, ki je v DOM ves čas, sicer bralnik zaslona novega obvestila ne bi zaznal. Napake obrazcev niso obvestila, ampak so prikazane pri obrazcu.
 
 ## Datumi in ure

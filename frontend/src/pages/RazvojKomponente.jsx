@@ -1,11 +1,20 @@
 // Pregled osnovnih komponent v vseh stanjih (dokument 07, 10: komponente pred stranmi). Pot
 // /razvoj/komponente obstaja le v razvojnem načinu (npm run dev), v buildu je ni.
 import { useState } from 'react';
+import { Link } from 'react-router';
 import Gumb from '../components/Gumb.jsx';
+import Harmonika from '../components/Harmonika.jsx';
+import Paginacija from '../components/Paginacija.jsx';
 import PogovornoOkno, { PotrditvenoOkno } from '../components/PogovornoOkno.jsx';
 import Polje from '../components/Polje.jsx';
+import PraznoStanje from '../components/PraznoStanje.jsx';
+import { SkeletKartic, SkeletTabele } from '../components/Skelet.jsx';
+import { slogGumba } from '../components/slogGumba.js';
 import { ZnackaOpreme, ZnackaRezervacije, ZnackaStanja } from '../components/StatusnaZnacka.jsx';
+import Tabela from '../components/Tabela.jsx';
+import Zavihki from '../components/Zavihki.jsx';
 import { useObvestila } from '../obvestila/useObvestila.js';
+import { kratekDatum } from '../utils/datumi.js';
 
 function Razdelek({ naslov, children }) {
   return (
@@ -16,12 +25,66 @@ function Razdelek({ naslov, children }) {
   );
 }
 
+// Primer podatkov za tabelo (oblika kot GET /api/rezervacije?zamujene=true).
+const ZAMUJENE = [
+  {
+    id: 1,
+    uporabnik: 'Ana Novak',
+    email: 'ana.novak@student.um.si',
+    kosi: 'Arduino Uno (A-014)',
+    do: '2026-11-05',
+    dniZamude: 5,
+  },
+  {
+    id: 2,
+    uporabnik: 'Žiga Černe',
+    email: 'ziga.cerne@student.um.si',
+    kosi: 'Multimeter (M-002), Spajkalnik (S-007)',
+    do: '2026-11-08',
+    dniZamude: 2,
+  },
+  {
+    id: 3,
+    uporabnik: 'Bor Šuster',
+    email: 'bor.suster@um.si',
+    kosi: 'Osciloskop (O-001)',
+    do: '2026-11-09',
+    dniZamude: 1,
+  },
+];
+
+const STOLPCI_ZAMUJENIH = [
+  {
+    kljuc: 'uporabnik',
+    oznaka: 'Uporabnik',
+    vrednost: (r) => r.uporabnik,
+    razvrsti: (r) => r.uporabnik,
+  },
+  { kljuc: 'email', oznaka: 'E-pošta', vrednost: (r) => r.email },
+  { kljuc: 'kosi', oznaka: 'Kosi', vrednost: (r) => r.kosi },
+  {
+    kljuc: 'rok',
+    oznaka: 'Rok',
+    vrednost: (r) => kratekDatum(r.do),
+    razvrsti: (r) => r.do,
+    stevilka: true,
+  },
+  {
+    kljuc: 'dni',
+    oznaka: 'Dni zamude',
+    vrednost: (r) => r.dniZamude,
+    razvrsti: (r) => r.dniZamude,
+    stevilka: true,
+  },
+];
+
 const Vrsta = ({ children }) => <div className="flex flex-wrap items-center gap-3">{children}</div>;
 
 export default function RazvojKomponente() {
   const obvesti = useObvestila();
   const [okno, setOkno] = useState(null);
   const [nalaganje, setNalaganje] = useState(false);
+  const [stran, setStran] = useState(1);
 
   function potrdiPreklic() {
     setNalaganje(true);
@@ -114,6 +177,67 @@ export default function RazvojKomponente() {
               <ZnackaStanja key={s} stanje={s} />
             ))}
           </Vrsta>
+        </div>
+      </Razdelek>
+
+      <Razdelek naslov="Tabela z razvrščanjem">
+        <p className="mb-3 text-sm text-gray-600">Pod 640 px se prikaže kot seznam kartic.</p>
+        <Tabela
+          naslov="Zamujene izposoje"
+          stolpci={STOLPCI_ZAMUJENIH}
+          vrstice={ZAMUJENE}
+          zacetnoRazvrscanje={{ kljuc: 'dni', smer: 'padajoce' }}
+        />
+        <div className="mt-4">
+          <Paginacija stran={stran} skupaj={143} onStran={setStran} />
+        </div>
+      </Razdelek>
+
+      <Razdelek naslov="Zavihki">
+        <Zavihki
+          oznaka="Moje izposoje"
+          zavihki={[
+            {
+              kljuc: 'trenutne',
+              oznaka: 'Trenutne',
+              vsebina: <p>Oddane, odobrene in izdane rezervacije.</p>,
+            },
+            {
+              kljuc: 'pretekle',
+              oznaka: 'Pretekle',
+              vsebina: <p>Vrnjene, zavrnjene in preklicane rezervacije.</p>,
+            },
+          ]}
+        />
+      </Razdelek>
+
+      <Razdelek naslov="Prazno stanje">
+        <PraznoStanje
+          naslov="Nimate še nobene rezervacije"
+          besedilo="Opremo izberete v katalogu."
+          dejanje={
+            <Link to="/katalog" className={slogGumba()}>
+              Na katalog
+            </Link>
+          }
+        />
+      </Razdelek>
+
+      <Razdelek naslov="Nalaganje">
+        <SkeletTabele vrstice={3} />
+        <div className="mt-6">
+          <SkeletKartic stevilo={4} />
+        </div>
+      </Razdelek>
+
+      <Razdelek naslov="Harmonika">
+        <div className="space-y-3">
+          <Harmonika naslov="Podrobnosti rezervacije" odprta>
+            <p>Namen: seminarska naloga pri predmetu Elektronika.</p>
+          </Harmonika>
+          <Harmonika naslov="Zgodovina kosa">
+            <p>Izposoje in stanja ob izdaji ter vračilu.</p>
+          </Harmonika>
         </div>
       </Razdelek>
 
