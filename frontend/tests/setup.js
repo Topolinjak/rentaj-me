@@ -3,6 +3,8 @@ import { afterEach, vi } from 'vitest';
 
 afterEach(() => {
   cleanup();
+  // V testih z okoljem node (tokeni, vite.config) sessionStorage ne obstaja.
+  globalThis.sessionStorage?.clear();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });

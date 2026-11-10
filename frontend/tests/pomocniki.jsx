@@ -3,6 +3,7 @@ import { render } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { vi } from 'vitest';
 import UporabnikProvider from '../src/auth/UporabnikProvider.jsx';
+import IzbiraProvider from '../src/izbira/IzbiraProvider.jsx';
 import ObvestilaProvider from '../src/obvestila/ObvestilaProvider.jsx';
 import { poti } from '../src/poti.jsx';
 
@@ -91,9 +92,11 @@ export function izrisi(pot, { vloga, api } = {}) {
   const router = createMemoryRouter(poti, { initialEntries: [pot] });
   render(
     <UporabnikProvider>
-      <ObvestilaProvider>
-        <RouterProvider router={router} />
-      </ObvestilaProvider>
+      <IzbiraProvider>
+        <ObvestilaProvider>
+          <RouterProvider router={router} />
+        </ObvestilaProvider>
+      </IzbiraProvider>
     </UporabnikProvider>,
   );
   return { router, fetch };
