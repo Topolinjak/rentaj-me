@@ -6,6 +6,7 @@ import { zahtevajPrijavo, zahtevajVlogo } from '../middleware/avtentikacija.js';
 import { validiraj } from '../middleware/validiraj.js';
 import {
   izdajRezervacijo,
+  mojeRezervacije,
   oddajRezervacijo,
   odobriRezervacijo,
   opozorilaZaRezervacijo,
@@ -99,6 +100,12 @@ rezervacijeRouter.post(
     res.status(201).json(await oddajRezervacijo(req.uporabnik, req.body));
   },
 );
+
+// GET /api/rezervacije/moje – lastne rezervacije prijavljenega uporabnika (US-10). Filter po
+// uporabniku je v servisu in ga ni mogoče spremeniti s parametri zahteve.
+rezervacijeRouter.get('/moje', zahtevajVlogo(...IZPOSOJEVALCI), async (req, res) => {
+  res.json(await mojeRezervacije(req.uporabnik.id));
+});
 
 // GET /api/rezervacije – seznam za tehnika (US-05: ?status=ODDANA, US-09: ?zamujene=true).
 rezervacijeRouter.get(

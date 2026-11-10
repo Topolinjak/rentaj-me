@@ -139,6 +139,22 @@ export async function seznamRezervacij({ status, zamujene }, zdaj = new Date()) 
   }));
 }
 
+// Lastne rezervacije uporabnika (US-10), od najkasnejšega začetka naprej. Frontend jih razdeli
+// na Trenutne in Pretekle po statusu. Zamuda se izračuna z jeZamujena/dniZamude (ADR-0007),
+// shranjeni status ostane IZDANA.
+export async function mojeRezervacije(uporabnikId, zdaj = new Date()) {
+  const rezervacije = await prisma.rezervacija.findMany({
+    where: { uporabnikId },
+    orderBy: [{ zacetek: 'desc' }, { id: 'desc' }],
+    include: vkljuciKose,
+  });
+  return rezervacije.map((r) => ({
+    ...predstaviRezervacijo(r),
+    zamujena: jeZamujena(r, zdaj),
+    dniZamude: dniZamude(r, zdaj),
+  }));
+}
+
 // Podrobnosti opozoril za uporabnika rezervacije `id` (US-11, klik na opozorilo).
 export async function opozorilaZaRezervacijo(id, zdaj = new Date()) {
   const rezervacija = await prisma.rezervacija.findUnique({
