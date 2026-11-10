@@ -1,6 +1,9 @@
-// Poti aplikacije (MVP, issue I-06). Vloge v komentarjih so informativne – zaščito poti in
-// preusmeritev na začetno stran vloge (US-01) doda I-08.
-import { Navigate } from 'react-router';
+// Poti aplikacije. Vsaka skupina strani je za ZascitenaPot z vlogami, ki jih sme videti
+// (dokument 02); vse razen prijave so v skupni postavitvi z glavo in nogo (I-08).
+import { IZPOSOJEVALCI } from './auth/vloge.js';
+import Postavitev from './components/Postavitev.jsx';
+import ZacetnaPreusmeritev from './components/ZacetnaPreusmeritev.jsx';
+import ZascitenaPot from './components/ZascitenaPot.jsx';
 import AdminKategorije from './pages/AdminKategorije.jsx';
 import AdminUporabniki from './pages/AdminUporabniki.jsx';
 import Inventar from './pages/Inventar.jsx';
@@ -17,29 +20,45 @@ import TehnikVracilo from './pages/TehnikVracilo.jsx';
 import TehnikZamujene from './pages/TehnikZamujene.jsx';
 
 export const poti = [
-  // Začasno na prijavo; I-08 preusmeri na začetno stran vloge.
-  { path: '/', element: <Navigate to="/prijava" replace /> },
-  { path: '/prijava', element: <Prijava /> }, // vsi
+  // Na začetno stran vloge (US-01) ali na prijavo.
+  { path: '/', element: <ZacetnaPreusmeritev /> },
+  { path: '/prijava', element: <Prijava /> },
 
-  // študent, asistent, profesor
-  { path: '/katalog', element: <Katalog /> },
-  { path: '/oprema/:id', element: <KosOpreme /> },
-  { path: '/rezervacija', element: <Rezervacija /> },
-  { path: '/moje-izposoje', element: <MojeIzposoje /> },
-
-  // tehnik
-  { path: '/tehnik', element: <TehnikOddane /> },
-  { path: '/tehnik/odobrene', element: <TehnikOdobrene /> },
-  { path: '/tehnik/izdane', element: <TehnikIzdane /> },
-  { path: '/tehnik/zamujene', element: <TehnikZamujene /> },
-  { path: '/tehnik/vracilo/:id', element: <TehnikVracilo /> },
-
-  // tehnik, admin
-  { path: '/inventar', element: <Inventar /> },
-
-  // admin
-  { path: '/admin/uporabniki', element: <AdminUporabniki /> },
-  { path: '/admin/kategorije', element: <AdminKategorije /> },
-
-  { path: '*', element: <NiNajdeno /> },
+  {
+    element: <Postavitev />,
+    children: [
+      {
+        element: <ZascitenaPot vloge={IZPOSOJEVALCI} />,
+        children: [
+          { path: '/katalog', element: <Katalog /> },
+          { path: '/oprema/:id', element: <KosOpreme /> },
+          { path: '/rezervacija', element: <Rezervacija /> },
+          { path: '/moje-izposoje', element: <MojeIzposoje /> },
+        ],
+      },
+      {
+        element: <ZascitenaPot vloge={['TEHNIK']} />,
+        children: [
+          { path: '/tehnik', element: <TehnikOddane /> },
+          { path: '/tehnik/odobrene', element: <TehnikOdobrene /> },
+          { path: '/tehnik/izdane', element: <TehnikIzdane /> },
+          { path: '/tehnik/zamujene', element: <TehnikZamujene /> },
+          { path: '/tehnik/vracilo/:id', element: <TehnikVracilo /> },
+        ],
+      },
+      {
+        element: <ZascitenaPot vloge={['TEHNIK', 'ADMIN']} />,
+        children: [{ path: '/inventar', element: <Inventar /> }],
+      },
+      {
+        element: <ZascitenaPot vloge={['ADMIN']} />,
+        children: [
+          { path: '/admin/uporabniki', element: <AdminUporabniki /> },
+          { path: '/admin/kategorije', element: <AdminKategorije /> },
+        ],
+      },
+      // 404 je v postavitvi, a brez zaščite: prijavljen uporabnik vidi meni, ostali le glavo.
+      { path: '*', element: <NiNajdeno /> },
+    ],
+  },
 ];

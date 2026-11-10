@@ -60,6 +60,7 @@
   --text-naslov--line-height: 1.25;
   --text-razdelek: 1.5rem; /* naslov razdelka, 24 px */
   --text-razdelek--line-height: 1.3;
+  --text-meni: 0.9375rem; /* meni v glavi, 15 px */
 
   /* Zaobljenost (3.5): 3 px za gumbe, polja, kartice, harmonike in značke. Okroglo
      (rounded-full) le za avatarje in ikone družbenih omrežij. */
@@ -80,5 +81,12 @@
 
   body {
     @apply bg-white font-sans text-base text-gray-700 antialiased;
+  }
+
+  /* Vidna fokusna obroba na vsakem interaktivnem elementu (dokument 07, 7). Na modri podlagi
+     (noga) jo komponenta zamenja z belo. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
   }
 }
