@@ -201,38 +201,63 @@ function preveriStanjaKosov(postavke, kosi) {
   }
 }
 
+// Zapiše stanje vsakega kosa v polje postavke `polje` (stanjeObIzdaji ali stanjeObVracilu) in
+// v trenutnoStanje kosa. Kliče se znotraj spremeniStatus, zato napaka razveljavi vse skupaj.
+// `poPostavki(tx, postavka, podatkiKosa)` doda korak za posamezno postavko (npr. poškodbo).
+async function zapisiStanjaKosov(tx, rezervacijaId, kosi, polje, poPostavki) {
+  const postavke = await tx.postavkaRezervacije.findMany({
+    where: { rezervacijaId },
+    include: { kosOpreme: true },
+    orderBy: { kosOpremeId: 'asc' },
+  });
+  preveriStanjaKosov(postavke, kosi);
+
+  const poKosu = new Map(kosi.map((k) => [k.id, k]));
+  for (const p of postavke) {
+    const kos = poKosu.get(p.kosOpremeId);
+    await tx.postavkaRezervacije.update({ where: { id: p.id }, data: { [polje]: kos.stanje } });
+    await tx.kosOpreme.update({
+      where: { id: p.kosOpremeId },
+      data: { trenutnoStanje: kos.stanje },
+    });
+    await poPostavki?.(tx, p, kos);
+  }
+}
+
 // Izdaja opreme (US-07): le iz ODOBRENA (spremeniStatus, sicer 409). V isti transakciji
 // zapiše stanje vsakega kosa ob izdaji in izdanoOb. trenutnoStanje kosa se posodobi na
 // stanje ob izdaji, ker je to zadnje znano stanje (privzeta izbira pri naslednji izdaji).
 export async function izdajRezervacijo(id, { kosi }, zdaj = new Date()) {
-  const stanjePoKosu = new Map(kosi.map((k) => [k.id, k.stanje]));
-
   const rezervacija = await spremeniStatus(
     id,
     'IZDANA',
     { izdanoOb: zdaj },
     {
       include: vkljuciKose,
-      dodatno: async (tx) => {
-        const postavke = await tx.postavkaRezervacije.findMany({
-          where: { rezervacijaId: id },
-          include: { kosOpreme: true },
-          orderBy: { kosOpremeId: 'asc' },
-        });
-        preveriStanjaKosov(postavke, kosi);
+      dodatno: (tx) => zapisiStanjaKosov(tx, id, kosi, 'stanjeObIzdaji'),
+    },
+  );
+  return predstaviRezervacijo(rezervacija);
+}
 
-        for (const p of postavke) {
-          const stanje = stanjePoKosu.get(p.kosOpremeId);
-          await tx.postavkaRezervacije.update({
-            where: { id: p.id },
-            data: { stanjeObIzdaji: stanje },
-          });
-          await tx.kosOpreme.update({
-            where: { id: p.kosOpremeId },
-            data: { trenutnoStanje: stanje },
-          });
-        }
-      },
+// Vračilo opreme (US-08): le iz IZDANA, tudi zamujene (sicer 409). V isti transakciji zapiše
+// vrnjenoOb, stanjeObVracilu, trenutnoStanje kosa in za vsak poškodovan kos ZapisPoskodbe
+// (razresen = false), ki se nato prikaže v opozorilih tehniku (US-11).
+export async function vrniRezervacijo(id, { kosi }, zdaj = new Date()) {
+  const rezervacija = await spremeniStatus(
+    id,
+    'VRNJENA',
+    { vrnjenoOb: zdaj },
+    {
+      include: vkljuciKose,
+      dodatno: (tx) =>
+        zapisiStanjaKosov(tx, id, kosi, 'stanjeObVracilu', async (tx, postavka, kos) => {
+          if (kos.stanje === 'POSKODOVANO') {
+            await tx.zapisPoskodbe.create({
+              data: { postavkaId: postavka.id, opis: kos.opisPoskodbe, ustvarjeno: zdaj },
+            });
+          }
+        }),
     },
   );
   return predstaviRezervacijo(rezervacija);
