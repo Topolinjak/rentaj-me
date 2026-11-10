@@ -44,6 +44,11 @@ describe('poti', () => {
     expect(await naslov(besedilo)).toBeTruthy();
   });
 
+  it('pregled komponent je dosegljiv med razvojem', async () => {
+    izrisi('/razvoj/komponente', { vloga: 'STUDENT' });
+    expect(await naslov('Komponente')).toBeTruthy();
+  });
+
   it('neznana pot prikaže stran 404', async () => {
     izrisi('/neobstojeca/pot', { vloga: 'STUDENT' });
     expect(await naslov('Stran ne obstaja')).toBeTruthy();

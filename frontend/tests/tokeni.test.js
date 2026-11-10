@@ -43,6 +43,7 @@ describe('tokeni iz dokumenta 07', () => {
     'opozorilo-ozadje',
     'napaka',
     'napaka-ozadje',
+    'napaka-temna',
     'info',
     'info-ozadje',
   ])('--color-%s obstaja', (ime) => {
@@ -67,7 +68,7 @@ describe('kontrast besedila (WCAG AA, vsaj 4,5 : 1)', () => {
     ['gray-900', 'white'],
     ['gray-700', 'white'],
     ['gray-600', 'white'], // pomožno besedilo
-    ['gray-600', 'gray-100'], // pomožno besedilo v glavi tabele
+    ['gray-600', 'gray-100'], // pomožno besedilo v glavi tabele, onemogočen gumb
     ['gray-700', 'gray-100'],
     ['uspeh', 'uspeh-ozadje'],
     ['opozorilo', 'opozorilo-ozadje'],
@@ -75,6 +76,8 @@ describe('kontrast besedila (WCAG AA, vsaj 4,5 : 1)', () => {
     ['uspeh', 'white'],
     ['opozorilo', 'white'],
     ['napaka', 'white'],
+    ['white', 'napaka-temna'], // nevarni gumb ob lebdenju
+    ['brand-700', 'brand-50'], // značka Oddana
   ])('%s na %s', (besedilo, ozadje) => {
     expect(kontrast(besedilo, ozadje)).toBeGreaterThanOrEqual(4.5);
   });

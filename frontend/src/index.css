@@ -51,6 +51,7 @@
   --color-opozorilo-ozadje: #fdf1de;
   --color-napaka: #b42318;
   --color-napaka-ozadje: #fdecea;
+  --color-napaka-temna: #912018; /* lebdenje na nevarnem gumbu */
   --color-info: var(--color-brand-600);
   --color-info-ozadje: var(--color-brand-50);
 
