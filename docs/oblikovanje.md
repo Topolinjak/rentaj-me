@@ -100,6 +100,15 @@ Strani prijavljenih uporabnikov so v skupni postavitvi (`components/Postavitev.j
 
 Kdo je prijavljen, frontend izve ob zagonu z `GET /api/auth/jaz` (`auth/UporabnikProvider.jsx`), ker je žeton v piškotku `httpOnly`, ki ga JavaScript ne vidi (ADR-0008). Dokler odgovor ne pride, zaščitene poti ne preusmerjajo. *Odjava* pokliče `POST /api/auth/odjava`, izprazni kontekst in preusmeri na prijavo.
 
+### Prijava (I-10)
+
+`pages/Prijava.jsx`: fotografija stavbe FNM s spletne strani (`assets/stavba-fnm.jpg`, pomanjšana na 1280 px, 188 kB) s plastjo `brand-800` pri 75 % prekrivnosti, na sredini bela kartica z logotipom, »Rentaj.me / Izposoja opreme« in obrazcem, spodaj noga. Fotografija je okras (`alt=""`).
+
+- Napake iz odgovora 400 se pokažejo pri poljih, sporočilo ob 401 (»Napačen e-poštni naslov ali geslo«), 403 (deaktiviran račun) in ob nedosegljivem strežniku pa nad gumbom z `role="alert"`.
+- Po prijavi se kontekst uporabnika napolni s podatki iz odgovora. Uporabnik gre na stran, ki jo je hotel odpreti (če ga je tja preusmerila zaščitena pot), sicer na začetno stran vloge.
+- Prijavljen uporabnik, ki odpre `/prijava`, gre na začetno stran vloge.
+- Polji imata `autoComplete` (`username`, `current-password`), da ju upravitelj gesel izpolni.
+
 ## Osnovne komponente (I-11)
 
 Pregled vseh komponent v vseh stanjih je med razvojem na `/razvoj/komponente` (`npm run dev`). V buildu te strani ni.
