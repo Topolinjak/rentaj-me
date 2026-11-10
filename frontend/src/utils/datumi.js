@@ -87,3 +87,42 @@ export function ura(trenutek) {
 // Datum in ura trenutka v Ljubljani: »22. 10. 2026 ob 14.00«.
 export const datumInUra = (trenutek) =>
   `${datumZLetom(datumVLjubljani(new Date(trenutek)))} ob ${ura(trenutek)}`;
+
+// --- Meseci (koledar zasedenosti) ---
+// Mesec je niz YYYY-MM.
+
+export const mesecDatuma = (datum) => datum.slice(0, 7);
+
+export const prviDanMeseca = (mesec) => `${mesec}-01`;
+
+export function zadnjiDanMeseca(mesec) {
+  const [leto, m] = mesec.split('-').map(Number);
+  // Dan 0 naslednjega meseca je zadnji dan tega meseca.
+  return izUtc(Date.UTC(leto, m, 0));
+}
+
+export function dodajMesece(mesec, n) {
+  const [leto, m] = mesec.split('-').map(Number);
+  return izUtc(Date.UTC(leto, m - 1 + n, 1)).slice(0, 7);
+}
+
+// Dan v tednu, ponedeljek = 0 … nedelja = 6 (slovenski koledar se začne s ponedeljkom).
+export const danVTednu = (datum) => (new Date(kotUtc(datum)).getUTCDay() + 6) % 7;
+
+const oblikaMeseca = new Intl.DateTimeFormat('sl', {
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const oblikaDneva = new Intl.DateTimeFormat('sl', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
+// »november 2026«
+export const imeMeseca = (mesec) => oblikaMeseca.format(kotUtc(prviDanMeseca(mesec)));
+
+// »22. oktober 2026« (za aria-label dneva v koledarju)
+export const dolgDatum = (datum) => oblikaDneva.format(kotUtc(datum));

@@ -34,7 +34,7 @@ describe('poti', () => {
 
   it.each([
     ['/katalog', 'STUDENT', 'Katalog'],
-    ['/oprema/14', 'PROFESOR', 'Kos opreme'],
+    ['/moje-izposoje', 'PROFESOR', 'Moje izposoje'],
     ['/tehnik', 'TEHNIK', 'Nadzorna plošča'],
     ['/tehnik/vracilo/3', 'TEHNIK', 'Vračilo'],
     ['/inventar', 'ADMIN', 'Upravljanje opreme'],
