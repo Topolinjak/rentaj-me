@@ -44,6 +44,7 @@ flowchart LR
 
 | Metoda in pot | Opis | Dostop |
 |---|---|---|
+| `GET /api/zdravje` | Preverjanje delovanja (Docker Compose `healthcheck`) | vsi |
 | `POST /api/auth/prijava` | Prijava, nastavi piškotek z JWT | vsi |
 | `POST /api/auth/odjava` | Odjava, izbriše piškotek | prijavljeni |
 | `GET /api/auth/jaz` | Podatki o prijavljenem uporabniku in vlogi | prijavljeni |
@@ -57,7 +58,7 @@ flowchart LR
 | `POST /api/kategorije`, `PATCH /api/kategorije/:id` | Nova kategorija, urejanje kategorije | admin |
 | `POST /api/rezervacije` | Oddaja rezervacije `{ kosi, od, do, namen, dolgorocna }` s preverjanjem razpoložljivosti, prekrivanja in pravil | študent, asistent, profesor |
 | `GET /api/rezervacije/moje` | Lastne rezervacije | študent, asistent, profesor |
-| `PATCH /api/rezervacije/:id/preklic` | Preklic oddane rezervacije | lastnik rezervacije |
+| `PATCH /api/rezervacije/:id/preklic` | Preklic oddane rezervacije (P-13, še ni izvedeno) | lastnik rezervacije |
 | `GET /api/rezervacije?status=&zamujene=` | Vse rezervacije s filtri (npr. `status=ODDANA`, `zamujene=true`); vsaka vsebuje `zamujena`, `dniZamude` in opozorili `steviloZamud`, `steviloNeporavnanihPoskodb` za svojega uporabnika | tehnik, admin |
 | `GET /api/rezervacije/stevci` | Števci za nadzorno ploščo `{ oddane, izdane, zamujene }` | tehnik, admin |
 | `GET /api/rezervacije/:id` | Ena rezervacija z uporabnikom, kosi (s trenutnim stanjem in stanji ob izdaji in vračilu) in zamudo | tehnik, admin |
@@ -70,7 +71,10 @@ flowchart LR
 | `POST /api/uporabniki` | Nov uporabnik z vlogo in začetnim geslom | admin |
 | `PATCH /api/uporabniki/:id` | Urejanje, ponastavitev gesla in (de)aktivacija (brez brisanja) | admin |
 | `GET /api/pravila/moje` | Omejitve prijavljenega uporabnika `{ vloga, maxKosov, maxDni, dolgorocna, maxDniDolgorocno, aktivnihKosov }` za namig v obrazcu | študent, asistent, profesor |
-| `/api/pravila` | Upravljanje pravil izposoje | admin |
+| `/api/pravila` | Upravljanje pravil izposoje (P-17, še ni izvedeno) | admin |
+| razreševanje poškodb, zgodovina kosa | Endpointa za US-15 in US-16 se določita v P-15 in P-16 | tehnik |
+
+Kosi v vseh odgovorih z rezervacijami imajo obliko `{ id, naziv, inventarnaStevilka, trenutnoStanje, stanjeObIzdaji, stanjeObVracilu }`. Napake imajo obliko `{ sporocilo }`, napake validacije (`400`) še `napake: [{ polje, sporocilo }]`, ki jih frontend prikaže pri poljih.
 
 ### Podatkovna baza
 
@@ -102,6 +106,8 @@ rentaj-me/
 │   │   ├── api/           # funkcije za klice API-ja (klic.js, auth.js)
 │   │   ├── auth/          # kontekst prijavljenega uporabnika, vloge in meni
 │   │   ├── obvestila/     # obvestila (toast)
+│   │   ├── izbira/        # kosi, izbrani za skupno rezervacijo (sessionStorage)
+│   │   ├── hooks/         # usePodatki (nalaganje), useObrazec (obrazci in napake API-ja)
 │   │   ├── utils/         # pomožne funkcije (datumi.js)
 │   │   ├── assets/        # logotipi
 │   │   └── index.css      # Tailwind in oblikovni tokeni (docs/oblikovanje.md)

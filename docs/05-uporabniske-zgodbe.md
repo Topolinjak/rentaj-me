@@ -329,7 +329,7 @@ Oznake funkcionalnosti (F1–F13) se ujemajo s številčenjem v dokumentu 02. Zg
 
 ## Predpostavke
 
-Nekateri kriteriji sprejemljivosti dopolnjujejo podrobnosti, ki v dokumentih 03 in 04 še niso izrecno zapisane. Ob implementaciji jih je treba dodati tudi tja:
+Nekateri kriteriji sprejemljivosti dopolnjujejo podrobnosti, ki v dokumentih 03 in 04 sprva niso bile izrecno zapisane. Ob implementaciji MVP so prenesene tja:
 
-- Ob vračilu se `trenutnoStanje` kosa posodobi na `stanjeObVracilu` (US-08).
-- Endpointi za razreševanje poškodb in zgodovino kosa (US-15, US-16) še niso navedeni v seznamu API endpointov v dokumentu 04.
+- Ob vračilu se `trenutnoStanje` kosa posodobi na `stanjeObVracilu` (US-08) – zapisano v dokumentu 03 (opis polja `trenutnoStanje`).
+- Endpointa za razreševanje poškodb in zgodovino kosa (US-15, US-16) sta v dokumentu 04 navedena kot del P-15 in P-16, ki nista v MVP.
