@@ -45,6 +45,8 @@ Posamezen fizični kos opreme z lastno inventarno številko. Dva enaka Arduina s
 
 Polje `status` pove, ali je kos sploh na voljo za izposojo. Ali je v določenem terminu zaseden, se izračuna iz rezervacij.
 
+Polje `trenutnoStanje` je zadnje znano stanje kosa. Tehnik ga določi ob vnosu kosa, nato pa se ob vsaki izdaji nastavi na `stanjeObIzdaji` in ob vsakem vračilu na `stanjeObVracilu` ustrezne postavke. Obrazec za izdajo ga ponudi kot privzeto izbiro.
+
 ### Rezervacija
 
 Zahtevek uporabnika za izposojo ene ali več kosov opreme v določenem terminu.
@@ -82,6 +84,8 @@ Par (`rezervacijaId`, `kosOpremeId`) je unikaten – isti kos se v eni rezervaci
 ### ZapisPoskodbe
 
 Evidenca poškodbe, ki jo tehnik ugotovi ob vračilu. Vezana je na postavko rezervacije, zato je vedno znano, kateri kos je bil poškodovan in pri katerem uporabniku.
+
+Zapis nastane samodejno ob vračilu za vsak kos, pri katerem tehnik izbere stanje `POSKODOVANO`; opis poškodbe je takrat obvezen. Nov zapis ima `razresen = false` in se prikazuje v opozorilih tehniku (US-11), dokler ga tehnik ne označi kot razrešenega (US-15, P-15).
 
 | Polje | Tip | Opis |
 |---|---|---|

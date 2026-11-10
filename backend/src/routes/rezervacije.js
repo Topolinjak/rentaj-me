@@ -11,6 +11,7 @@ import {
   opozorilaZaRezervacijo,
   seznamRezervacij,
   stevciRezervacij,
+  vrniRezervacijo,
   zavrniRezervacijo,
 } from '../services/rezervacije.js';
 import { danes, jeVeljavenDatum } from '../utils/datumi.js';
@@ -45,18 +46,33 @@ const zavrnitevShema = z.object({
   komentarTehnika: neobveznoBesedilo,
 });
 
-// Stanje vsakega kosa ob izdaji: { kosi: [{ id, stanje }] }.
-const izdajaShema = z.object({
-  kosi: z
-    .array(
-      z.object({
-        id: z.number('Neveljaven kos.').int().positive('Neveljaven kos.'),
-        stanje: z.enum(StanjeOpreme, 'Izberite stanje kosa.'),
-      }),
-      'Izberite stanje za vse kose.',
-    )
-    .min(1, 'Izberite stanje za vse kose.'),
+// Stanje vsakega kosa: { kosi: [{ id, stanje }] }. Ali so podani natanko kosi rezervacije,
+// preveri servis, ker mora za to prebrati postavke.
+const stanjeKosaShema = z.object({
+  id: z.number('Neveljaven kos.').int().positive('Neveljaven kos.'),
+  stanje: z.enum(StanjeOpreme, 'Izberite stanje kosa.'),
 });
+
+const stanjaKosovShema = (kos) =>
+  z.object({
+    kosi: z.array(kos, 'Izberite stanje za vse kose.').min(1, 'Izberite stanje za vse kose.'),
+  });
+
+const izdajaShema = stanjaKosovShema(stanjeKosaShema);
+
+// Ob vračilu je pri poškodovanem kosu obvezen opis poškodbe (US-08). Pri drugih stanjih se
+// opis ne shrani.
+const vraciloShema = stanjaKosovShema(
+  stanjeKosaShema.extend({ opisPoskodbe: neobveznoBesedilo }).superRefine((k, ctx) => {
+    if (k.stanje === 'POSKODOVANO' && !k.opisPoskodbe) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['opisPoskodbe'],
+        message: 'Opišite poškodbo.',
+      });
+    }
+  }),
+);
 
 const oddajaShema = obdobjeShema()
   .extend({
@@ -139,5 +155,16 @@ rezervacijeRouter.patch(
   validiraj(izdajaShema),
   async (req, res) => {
     res.json(await izdajRezervacijo(req.params.id, req.body));
+  },
+);
+
+// PATCH /api/rezervacije/:id/vracilo – le tehnik; stanje za vsak kos, pri poškodbi opis (US-08).
+rezervacijeRouter.patch(
+  '/:id/vracilo',
+  zahtevajVlogo('TEHNIK'),
+  validiraj(idShema, 'params'),
+  validiraj(vraciloShema),
+  async (req, res) => {
+    res.json(await vrniRezervacijo(req.params.id, req.body));
   },
 );
