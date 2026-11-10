@@ -86,7 +86,7 @@ describe('rezervacija iz kataloga (US-03, I-24)', () => {
     expect(telesaOddaj(fetch)).toEqual([
       { kosi: [11], od: '2026-11-20', do: '2026-11-22', namen: 'Seminarska naloga' },
     ]);
-    expect(screen.getByRole('status').textContent).toContain(
+    expect(screen.getByRole('status', { name: 'Obvestila' }).textContent).toContain(
       'Rezervacija oddana – čaka na odobritev tehnika',
     );
     // Izbira je po oddaji prazna.

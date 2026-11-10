@@ -48,6 +48,7 @@ export default function ObvestilaProvider({ children }) {
       <div
         role="status"
         aria-live="polite"
+        aria-label="Obvestila"
         className="pointer-events-none fixed inset-x-4 bottom-4 z-50 flex flex-col items-stretch gap-2 sm:inset-x-auto sm:right-4 sm:w-96"
       >
         {obvestila.map(({ id, besedilo, vrsta }) => (
