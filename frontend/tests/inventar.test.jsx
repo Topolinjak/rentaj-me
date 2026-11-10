@@ -101,7 +101,7 @@ describe('inventar (US-19)', () => {
       ([url, o]) => url === '/api/oprema/11' && o.method === 'PATCH',
     );
     expect(JSON.parse(klic[1].body)).toEqual({ status: 'V_OKVARI' });
-    expect(screen.getByRole('status').textContent).toContain(
+    expect(screen.getByRole('status', { name: 'Obvestila' }).textContent).toContain(
       '2 odprti rezervaciji vključujeta ta kos',
     );
   });

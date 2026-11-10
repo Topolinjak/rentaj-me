@@ -97,7 +97,9 @@ describe('stran Uporabniki (US-18)', () => {
       vloga: 'ASISTENT',
       geslo: 'geslo1234',
     });
-    expect(screen.getByRole('status').textContent).toContain('Uporabnik Dana Ribič je ustvarjen');
+    expect(screen.getByRole('status', { name: 'Obvestila' }).textContent).toContain(
+      'Uporabnik Dana Ribič je ustvarjen',
+    );
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 

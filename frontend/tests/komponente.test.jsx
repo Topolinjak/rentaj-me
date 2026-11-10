@@ -245,7 +245,7 @@ describe('obvestila (toast)', () => {
           <Sprozilec />
         </ObvestilaProvider>,
       );
-      const obmocje = screen.getByRole('status');
+      const obmocje = screen.getByRole('status', { name: 'Obvestila' });
       expect(obmocje.getAttribute('aria-live')).toBe('polite');
 
       fireEvent.click(screen.getByRole('button', { name: 'Oddaj' }));
@@ -268,7 +268,7 @@ describe('obvestila (toast)', () => {
     );
     await userEvent.click(screen.getByRole('button', { name: 'Oddaj' }));
     await userEvent.click(screen.getByRole('button', { name: 'Zapri obvestilo' }));
-    expect(screen.getByRole('status').textContent).toBe('');
+    expect(screen.getByRole('status', { name: 'Obvestila' }).textContent).toBe('');
   });
 
   it('useObvestila zunaj ponudnika vrže napako', () => {

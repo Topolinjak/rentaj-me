@@ -39,3 +39,12 @@ export function steviloKosovBesedilo(n) {
   if (ostanek === 3 || ostanek === 4) return `${n} kosi`;
   return `${n} kosov`;
 }
+
+// Razlogi zavrnitve (dokument 02, Ročna odločitev tehnika).
+export const OZNAKE_RAZLOGOV = {
+  ZAMUJENA_IZPOSOJA: 'Zamujena izposoja',
+  NEPORAVNANA_POSKODBA: 'Neporavnana poškodba',
+  OPREMA_V_OKVARI: 'Oprema v okvari ali na servisu',
+  POTREBNA_ZA_VAJE: 'Oprema potrebna za izvedbo vaj',
+  NEUSTREZEN_NAMEN: 'Neustrezen namen izposoje',
+};
